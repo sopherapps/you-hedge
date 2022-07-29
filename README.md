@@ -18,10 +18,16 @@ A WebOS application to sidestep the mentally-degrading YouTube news feed and onl
 git clone git@github.com:sopherapps/you-hedge.git
 ```
 
-- Install dependencies
+- Copy the `.example.env` file to `.env` file and update its variables
 
 ```shell
 cd you-hedge
+cp .example.env .env
+```
+
+- Install dependencies
+
+```shell
 yarn install
 ```
 
@@ -55,7 +61,9 @@ yarn build
 - Use react and react-router to create a single page application
 - Use gapi to login with google, and make requests to the YouTube data api v3
 - Save auth token in session storage
-- cache YouTube data api requests in session storage for a TTL of upto 5 minutes
+- cache YouTube data api requests in session storage for a TTL of upto 5 minutes. 
+  This is already being done on the backend. The requests had to be shifted to the backend to avoind the exposure
+  of Google API client secrets and API keys.
 - Use the YouTube iframe to play the youtube videos themselves
 
 ### Project Structure
@@ -66,7 +74,7 @@ backend integration (`client`).
 - `pages` folder contains all the pages/screens to be displayed by the app
 - `dtos` folder contains the Data Transfer Objects used in the application
 - `store` folder contains the interface to the store that stores the app's data
-- `client` folder contains the functionality to interface with the Youtube data client 
+- `client` folder contains the functionality to interface with the backend 
 - `lib` folder contains `components`, common `utils` and common `assets`.
 
 ## How to Test
@@ -77,10 +85,16 @@ backend integration (`client`).
 git clone git@github.com:sopherapps/you-hedge.git
 ```
 
-- Install dependencies
+- Copy the `.example.env` file to `.env` file and update its variables
 
 ```shell
 cd you-hedge
+cp .example.env .env
+```
+
+- Install dependencies
+
+```shell
 yarn install
 ```
 
