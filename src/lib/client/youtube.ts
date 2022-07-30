@@ -6,7 +6,7 @@ import { getLoginResponse, initializeLogin, refreshToken } from "./login";
 
 export class YoutubeClient {
     private apiBaseUrl: string = process.env.REACT_APP_API_BASE_URL || "";
-    private authDetails: AuthDetails | undefined;
+    authDetails: AuthDetails | undefined;
     private refreshTokenTaskHandle: number | undefined;
     private sessionStorageKey = "YoutubeClient";
 

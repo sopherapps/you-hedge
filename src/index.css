@@ -1,13 +1,525 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+/* main css */
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Qwigley&display=swap");
+
+:root {
+  --dark-x2: #202124;
+  --dark-x1_5: rgba(78, 84, 87, 0.16);
+  --dark: #1a1c1d;
+  --darkish: #4b5154;
+  --light: #dbd8d3;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+* {
+  font-family: "Open Sans", sans-serif;
+  font-size: 16px;
+  margin: 0;
+  box-sizing: border-box;
+  background-color: var(--dark);
+  color: var(--light);
+}
+
+/* Layout */
+.flex {
+  display: flex;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.align-center {
+  align-items: center;
+}
+
+.grid {
+  display: grid;
+  column-gap: 5%;
+  gap: 2%;
+}
+
+.grid-4-cols {
+  grid-template-columns: auto auto auto auto;
+}
+
+.h-100vh {
+  height: 100vh;
+}
+
+.h-10 {
+  height: 10%;
+}
+
+.h-20 {
+  height: 20%;
+}
+
+.h-30 {
+  height: 30%;
+}
+
+.h-40 {
+  height: 40%;
+}
+
+.h-50 {
+  height: 50%;
+}
+
+.h-60 {
+  height: 60%;
+}
+
+.h-70 {
+  height: 70%;
+}
+
+.h-80 {
+  height: 80%;
+}
+
+.h-90 {
+  height: 90%;
+}
+
+.h-100 {
+  height: 100vh;
+}
+
+.w-100vw {
+  width: 100vw;
+}
+
+.w-10 {
+  width: 10%;
+}
+
+.w-20 {
+  width: 20%;
+}
+
+.w-30 {
+  width: 30%;
+}
+
+.w-40 {
+  width: 40%;
+}
+
+.w-50 {
+  width: 50%;
+}
+
+.w-60 {
+  width: 60%;
+}
+
+.w-70 {
+  width: 70%;
+}
+
+.w-80 {
+  width: 80%;
+}
+
+.w-90 {
+  width: 90%;
+}
+
+.w-100 {
+  width: 100vh;
+}
+
+.p-1 {
+  padding: 1%;
+}
+
+.p-2 {
+  padding: 2%;
+}
+
+.p-3 {
+  padding: 3%;
+}
+
+.p-4 {
+  padding: 4%;
+}
+
+.p-5 {
+  padding: 5%;
+}
+
+.p-6 {
+  padding: 6%;
+}
+
+.p-7 {
+  padding: 7%;
+}
+
+.p-8 {
+  padding: 8%;
+}
+
+.p-9 {
+  padding: 9%;
+}
+
+.p-10 {
+  padding: 10%;
+}
+
+.px-1 {
+  padding-left: 1%;
+  padding-right: 1%;
+}
+
+.px-2 {
+  padding-left: 2%;
+  padding-right: 2%;
+}
+
+.px-3 {
+  padding-left: 3%;
+  padding-right: 3%;
+}
+
+.px-4 {
+  padding-left: 4%;
+  padding-right: 4%;
+}
+
+.px-5 {
+  padding-left: 5%;
+  padding-right: 5%;
+}
+
+.px-6 {
+  padding-left: 6%;
+  padding-right: 6%;
+}
+
+.px-7 {
+  padding-left: 7%;
+  padding-right: 7%;
+}
+
+.px-8 {
+  padding-left: 8%;
+  padding-right: 8%;
+}
+
+.px-9 {
+  padding-left: 9%;
+  padding-right: 9%;
+}
+
+.px-10 {
+  padding-left: 10%;
+  padding-right: 10%;
+}
+
+.py-1 {
+  padding-top: 1%;
+  padding-bottom: 1%;
+}
+
+.py-2 {
+  padding-top: 2%;
+  padding-bottom: 2%;
+}
+
+.py-3 {
+  padding-top: 3%;
+  padding-bottom: 3%;
+}
+
+.py-4 {
+  padding-top: 4%;
+  padding-bottom: 4%;
+}
+
+.py-5 {
+  padding-top: 5%;
+  padding-bottom: 5%;
+}
+
+.py-6 {
+  padding-top: 6%;
+  padding-bottom: 6%;
+}
+
+.py-7 {
+  padding-top: 7%;
+  padding-bottom: 7%;
+}
+
+.py-8 {
+  padding-top: 8%;
+  padding-bottom: 8%;
+}
+
+.py-9 {
+  padding-top: 9%;
+  padding-bottom: 9%;
+}
+
+.py-10 {
+  padding-top: 10%;
+  padding-bottom: 10%;
+}
+
+/**/
+.m-1 {
+  margin: 1%;
+}
+
+.m-2 {
+  margin: 2%;
+}
+
+.m-3 {
+  margin: 3%;
+}
+
+.m-4 {
+  margin: 4%;
+}
+
+.m-5 {
+  margin: 5%;
+}
+
+.m-6 {
+  margin: 6%;
+}
+
+.m-7 {
+  margin: 7%;
+}
+
+.m-8 {
+  margin: 8%;
+}
+
+.m-9 {
+  margin: 9%;
+}
+
+.m-10 {
+  margin: 10%;
+}
+
+.mx-1 {
+  margin-left: 1%;
+  margin-right: 1%;
+}
+
+.mx-2 {
+  margin-left: 2%;
+  margin-right: 2%;
+}
+
+.mx-3 {
+  margin-left: 3%;
+  margin-right: 3%;
+}
+
+.mx-4 {
+  margin-left: 4%;
+  margin-right: 4%;
+}
+
+.mx-5 {
+  margin-left: 5%;
+  padding-right: 5%;
+}
+
+.mx-6 {
+  margin-left: 6%;
+  margin-right: 6%;
+}
+
+.mx-7 {
+  margin-left: 7%;
+  margin-right: 7%;
+}
+
+.mx-8 {
+  margin-left: 8%;
+  margin-right: 8%;
+}
+
+.mx-9 {
+  margin-left: 9%;
+  margin-right: 9%;
+}
+
+.mx-10 {
+  margin-left: 10%;
+  margin-right: 10%;
+}
+
+.my-1 {
+  margin-top: 1%;
+  margin-bottom: 1%;
+}
+
+.my-2 {
+  margin-top: 2%;
+  margin-bottom: 2%;
+}
+
+.my-3 {
+  margin-top: 3%;
+  margin-bottom: 3%;
+}
+
+.my-4 {
+  margin-top: 4%;
+  margin-bottom: 4%;
+}
+
+.my-5 {
+  margin-top: 5%;
+  margin-bottom: 5%;
+}
+
+.my-6 {
+  margin-top: 6%;
+  margin-bottom: 6%;
+}
+
+.my-7 {
+  margin-top: 7%;
+  margin-bottom: 7%;
+}
+
+.my-8 {
+  margin-top: 8%;
+  margin-bottom: 8%;
+}
+
+.my-9 {
+  margin-top: 9%;
+  margin-bottom: 9%;
+}
+
+.my-10 {
+  margin-top: 10%;
+  margin-bottom: 10%;
+}
+
+/* Typography */
+.h1,
+.h2,
+.h3,
+.h4,
+.h5,
+.h6 {
+  margin-bottom: 0.5rem;
+  font-family: inherit;
+  font-weight: 500;
+  line-height: 1.2;
+  color: inherit;
+}
+
+.h1,
+h1 {
+  font-size: 2.5rem;
+}
+
+.h2,
+h2 {
+  font-size: 2rem;
+}
+
+.h3,
+h3 {
+  font-size: 1.75rem;
+}
+
+.h4,
+h4 {
+  font-size: 1.5rem;
+}
+
+.h5,
+h5 {
+  font-size: 1.25rem;
+}
+
+.h6,
+h6 {
+  font-size: 1rem;
+}
+
+/* Custom */
+.sidebar {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+.content-area {
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+/* buttons */
+.btn {
+  cursor: pointer;
+  border: 1px solid transparent;
+  outline: none;
+  vertical-align: middle;
+  background-color: inherit;
+  text-decoration: none;
+}
+
+.btn:hover,
+.btn:active,
+.active {
+  background-color: var(--dark-x1_5);
+}
+
+.btn-round {
+  border-radius: 50%;
+  padding: 2%;
+}
+
+.btn img {
+  height: 100%;
+  max-width: 100%;
+  width: auto;
+}
+
+/* cta */
+.cta {
+  text-align: center;
+}
+
+.cta .btn {
+  padding: 0;
+  max-width: 250px;
+  width: 30%;
+  background-color: var(--dark-x2);
+}
+
+.cta .btn:hover {
+  background-color: var(--darkish);
+}
+
+.cta .btn img {
+  vertical-align: middle;
+}
+
+.cta p {
+  font-size: 1.05rem;
+  margin-bottom: 1.5rem;
+  margin-top: 1.5rem;
+  max-width: 50%;
+  margin-left: auto;
+  margin-right: auto;
 }

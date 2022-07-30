@@ -1,32 +1,45 @@
 // Page that shows the default welcome page with login option
 import React, { useContext } from "react";
-import logo from './lib/assets/img/logo.svg';
-import googleSignInBtn from './lib/assets/img/google_signin.png';
-import { IsLoggedInContext, LoginDetailsContext } from "../contexts";
+import logo from '../lib/assets/img/logo.svg';
+import googleSignInBtn from '../lib/assets/img/google_signin.png';
+import { LoginStatusContext } from "../contexts";
+import { LoginInitialized, LoginPending } from "../lib/types/state";
+import { InstanceSwitch, SwitchCase } from "../components/InstanceSwitch";
+import { LoginDetails } from "../lib/types/dtos";
 
 export default function WelcomePage({ initLogin }: { initLogin: () => void }) {
-    const isLoggedIn = useContext(IsLoggedInContext);
-    const { verificationUrl, deviceCode } = useContext(LoginDetailsContext);
+    const loginStatus = useContext(LoginStatusContext);
 
     return (
-        <div className="d-flex justify-center align-center full-height">
+        <div className="flex justify-center align-center h-100vh v-100vw">
             <div className="cta">
                 <img src={logo} className="logo" alt="logo" />
-                <p>
-                    We know how the YouTube feed and other social media feed
-                    can endanger our mental health. However, YouTube has some important things
-                    we still need so we can't just drop it.
-                    YouHedge ensures you view only videos of channels you subscribe to
+                <p className="intro">
+                    YouHedge protects your mental health by ensuring
+                    you view only videos of channels you subscribe to
                     without being tempted by the feed and #shorts
                 </p>
-                {isLoggedIn ? (<p>
-                    Please visit URL <strong>{verificationUrl}</strong> <br />
-                    And Feed in the Code <strong>{deviceCode}</strong>
-                </p>) :
-                    (<button onClick={initLogin}>
-                        <img src={googleSignInBtn} className="google-signin" alt="Sign in with Google" />
-                    </button>)}
+                <InstanceSwitch value={loginStatus}>
+                    <SwitchCase condition={LoginInitialized}>
+                        <p>
+                            Please visit URL
+                            <a target="_blank" href={(loginStatus?.details as LoginDetails)?.verificationUrl}>
+                                <strong>{(loginStatus?.details as LoginDetails)?.verificationUrl}</strong>
+                            </a>
+                        </p>
+                        <p>
+                            And Feed in the Code <strong>{(loginStatus?.details as LoginDetails)?.userCode}</strong>
+                        </p>
+                    </SwitchCase>
+                    <SwitchCase condition={LoginPending}>
+                        <button onClick={initLogin} className="btn">
+                            <img src={googleSignInBtn} className="google-signin" alt="Sign in with Google" />
+                        </button>
+                    </SwitchCase>
+                </InstanceSwitch>
             </div>
         </div>
     );
 }
+
+

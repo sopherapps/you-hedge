@@ -1,13 +1,15 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import './App.css';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { IsLoggedInContext, LoginDetailsContext, ChannelsContext, PlaylistItemsContext } from './contexts';
+import { LoginStatusContext, ChannelsContext, PlaylistItemsContext } from './contexts';
 import WelcomePage from "./pages/welcome.page";
-import { YoutubeClient } from "./client/youtube";
-import { Store } from './store';
+import { YoutubeClient } from "./lib/client/youtube";
+import { Store } from './lib/store';
 import HomePage from './pages/home.page';
-import { Channel, LoginDetails } from './types/dtos';
+import { AuthDetails, Channel, LoginDetails } from './lib/types/dtos';
 import PlayerPage from './pages/player.page';
+import { LoginFinalized, LoginInitialized, LoginPending, LoginStatus } from './lib/types/state';
+import { InstanceSwitch, SwitchCase } from './components/InstanceSwitch';
+import NotFoundPage from './pages/NotFound.page';
 
 const youtubeClient = new YoutubeClient();
 const store = new Store();
@@ -16,15 +18,7 @@ function App() {
     /**
      * States
      */
-    const [isLoggedIn, setIsLoggedIn] = useState(youtubeClient.isLoggedIn);
-    const [isLoggingIn, setIsLoggingIn] = useState(false);
-    const [loginDetails, setLoginDetails] = useState<LoginDetails>(new LoginDetails({
-        user_code: "",
-        verification_url: "",
-        device_code: "",
-        interval: 0,
-        expires_in: 0
-    }));
+    const [loginStatus, setLoginStatus] = useState<LoginStatus>(new LoginPending());
     const [channels, setChannels] = useState(store.channels);
     const [playlistItems, setPlayListItems] = useState(store.playlistItems);
 
@@ -32,9 +26,8 @@ function App() {
      * Callbacks
      */
     const initLogin = useCallback(() => {
-        youtubeClient.getLoginDetails().then(data => {
-            setLoginDetails(data);
-            setIsLoggingIn(true);
+        youtubeClient.getLoginDetails().then(details => {
+            setLoginStatus(loginStatus.initialize(details));
         }).catch(console.error);
     }, [youtubeClient]);
 
@@ -56,47 +49,52 @@ function App() {
      * Effects
      */
     useEffect(() => {
-        if (isLoggingIn) {
-            youtubeClient.finalizeLogin(loginDetails).then(() => {
+        if (loginStatus instanceof LoginInitialized) {
+            youtubeClient.finalizeLogin(loginStatus.details as LoginDetails).then(() => {
                 if (youtubeClient.isLoggedIn()) {
-                    setIsLoggedIn(true);
+                    setLoginStatus(loginStatus.finalize(youtubeClient.authDetails as AuthDetails));
                 }
-                setIsLoggingIn(false);
             }).catch(console.error);
         }
-    }, [youtubeClient, isLoggingIn, setIsLoggedIn, setIsLoggingIn]);
+    }, [youtubeClient, loginStatus]);
 
     useEffect(() => {
-        if (JSON.stringify(channels) === "{}" && isLoggedIn) {
+        if (JSON.stringify(channels) === "{}" && loginStatus instanceof LoginFinalized) {
             youtubeClient.getChannels().then((channelList) => {
                 store.addChannels(channelList);
                 setChannels(store.channels);
             }).catch(console.error);
         }
-    }, [youtubeClient, isLoggedIn, store]);
+    }, [youtubeClient, loginStatus, store]);
 
     // TODO: I need to set up a way of updating a given batch of playlists or channels (basing 
     // on the channelId, pageToken tuple or pageToken respectively) when any is found to be stale
     // i.e. has a timestamp that is earlier than current timestamp by more than the selected TTL.
 
     return (
-        <IsLoggedInContext.Provider value={isLoggedIn}>
-            <LoginDetailsContext.Provider value={loginDetails}>
-                <ChannelsContext.Provider value={channels}>
-                    <PlaylistItemsContext.Provider value={playlistItems}>
-                        <BrowserRouter>
-                            <Routes>
-                                <Route path="/" element={<WelcomePage initLogin={initLogin} />} />
-                                <Route path='list' element={<HomePage
-                                    refreshChannelBatch={batchRefreshChannels}
-                                    refreshPlaylistItemBatch={batchRefreshPlaylistItems} />} />
-                                <Route path="player" element={<PlayerPage />} />
-                            </Routes>
-                        </BrowserRouter>
-                    </PlaylistItemsContext.Provider>
-                </ChannelsContext.Provider>
-            </LoginDetailsContext.Provider>
-        </IsLoggedInContext.Provider>
+        <LoginStatusContext.Provider value={loginStatus}>
+            <ChannelsContext.Provider value={channels}>
+                <PlaylistItemsContext.Provider value={playlistItems}>
+                    <BrowserRouter>
+                        <Routes>
+                            <Route path="/" element={
+                                <InstanceSwitch value={loginStatus}>
+                                    <SwitchCase condition={LoginPending} children={<WelcomePage initLogin={initLogin} />} />
+                                    <SwitchCase condition={LoginInitialized} children={<WelcomePage initLogin={initLogin} />} />
+                                    <SwitchCase condition={LoginFinalized} children={
+                                        <HomePage
+                                            refreshChannelBatch={batchRefreshChannels}
+                                            refreshPlaylistItemBatch={batchRefreshPlaylistItems} />
+                                    } />
+                                </InstanceSwitch>
+                            } />
+                            <Route path="player/:videoId" element={<PlayerPage />} />
+                            <Route path="*" element={<NotFoundPage />} />
+                        </Routes>
+                    </BrowserRouter>
+                </PlaylistItemsContext.Provider>
+            </ChannelsContext.Provider>
+        </LoginStatusContext.Provider>
     );
 }
 
