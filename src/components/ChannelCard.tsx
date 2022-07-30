@@ -7,8 +7,8 @@ interface IProps {
 }
 
 export default function ChannelCard({ channel, onClick }: IProps) {
-    return <div className="card h-10 w-100" onClick={() => onClick(channel)}>
+    return <div className="card channel-card flex h-8 px-10 py-5" onClick={() => onClick(channel)}>
         <Avatar imageUrl={channel.imageUrl} height="80%" />
-        <span className="h3">{channel.title}</span>
+        <div className="text">{channel.title}</div>
     </div>
 }

@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { LoginStatusContext, ChannelsContext, PlaylistItemsContext } from './contexts';
+import { LoginStatusContext, ChannelsContext, PlaylistItemsContext } from './lib/contexts';
 import WelcomePage from "./pages/welcome.page";
 import { YoutubeClient } from "./lib/client/youtube";
 import { Store } from './lib/store';

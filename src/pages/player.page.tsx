@@ -7,12 +7,12 @@ export default function PlayerPage() {
     return <div className="h-100vh w-100vw">
         <iframe
             src={`https://www.youtube.com/embed/${videoId}?autoplay=1`}
-            height="150%"
-            width="150%"
+            height="100%"
+            width="100%"
             style={{
                 overflow: "hidden",
-                height: "150%",
-                width: "150%",
+                height: "100%",
+                width: "100%",
             }}
             frameBorder="0"
         />

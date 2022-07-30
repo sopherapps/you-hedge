@@ -4,7 +4,7 @@ interface IProps {
 }
 
 export default function Avatar({ imageUrl, height }: IProps) {
-    return <div style={{ height }}>
-        <img src={imageUrl} style={{ minHeight: "100%", borderRadius: "50%" }} />
+    return <div className="avatar" style={{ height, width: "auto" }}>
+        <img src={imageUrl} style={{ height: "100%", borderRadius: "50%" }} />
     </div>
 }

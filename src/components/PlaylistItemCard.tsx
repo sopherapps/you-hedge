@@ -1,13 +1,15 @@
+import { useMemo } from "react";
 import { PlaylistItem } from "../lib/types/dtos";
 
 export default function PlaylistItemCard({ item }: { item: PlaylistItem }) {
-    return <div className="card h-30vh w-30% m-2%">
-        <div className="h-60% w-100%">
-            <img src={item.imageUrl} style={{ minHeight: "100%", minWidth: "100%" }} />
+    const title = useMemo(() => `${item.title.slice(0, 140).trimEnd()}`, [item]);
+
+    return <div className="card playlist-item-card h-100">
+        <div className="card-header h-70 w-100">
+            <img src={item.imageUrl} style={{ height: "100%", width: "100%", objectFit: "cover" }} />
         </div>
-        <div className="h-40% w-100% p-3%">
-            <h3 className="subtitle">{item.title}</h3>
-            <p className="description">{item.description}</p>
+        <div className="card-body p-3 h-30 w-100">
+            <p className="h6 subtitle">{title}</p>
         </div>
     </div>
 }

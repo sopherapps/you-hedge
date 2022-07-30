@@ -2,7 +2,7 @@
 import React, { useContext } from "react";
 import logo from '../lib/assets/img/logo.svg';
 import googleSignInBtn from '../lib/assets/img/google_signin.png';
-import { LoginStatusContext } from "../contexts";
+import { LoginStatusContext } from "../lib/contexts";
 import { LoginInitialized, LoginPending } from "../lib/types/state";
 import { InstanceSwitch, SwitchCase } from "../components/InstanceSwitch";
 import { LoginDetails } from "../lib/types/dtos";
