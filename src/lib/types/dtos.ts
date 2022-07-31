@@ -43,6 +43,7 @@ export class Channel {
     imageUrl: string;
     playlistId: string;
     pageToken: string | undefined; // the page token used when querying for the corresponding subscription
+    nextPageToken: string | undefined;
     timestamp: Date;
 
     constructor(subscriptionResponse: SubscriptionResponse, channelDetails: ChannelDetails, position: number) {
@@ -53,6 +54,7 @@ export class Channel {
         this.imageUrl = channelDetails.snippet.thumbnails.high.url;
         this.playlistId = channelDetails.contentDetails.relatedPlaylists.uploads;
         this.pageToken = subscriptionResponse.prevPageToken;
+        this.nextPageToken = subscriptionResponse.nextPageToken;
         this.timestamp = new Date();
     }
 }
@@ -66,6 +68,7 @@ export class PlaylistItem {
     imageUrl: string;
     videoId: string;
     pageToken: string | undefined; // the page token used when querying for the given playlist item
+    nextPageToken: string | undefined;
     timestamp: Date;
 
     constructor(playlistItemListResponse: PlaylistItemListResponse, playlistItemResponse: PlaylistItemResponse, channelId: string) {
@@ -76,6 +79,7 @@ export class PlaylistItem {
         this.imageUrl = playlistItemResponse.snippet.thumbnails?.high?.url || playlistItemResponse.snippet.thumbnails?.medium?.url || playlistItemResponse.snippet.thumbnails?.default?.url;
         this.channelId = channelId;
         this.pageToken = playlistItemListResponse.prevPageToken;
+        this.nextPageToken = playlistItemListResponse.nextPageToken;
         this.videoId = playlistItemResponse.snippet.resourceId.videoId;
         this.timestamp = new Date();
     }

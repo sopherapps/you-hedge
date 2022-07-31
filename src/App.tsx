@@ -27,21 +27,30 @@ function App() {
      */
     const initLogin = useCallback(() => {
         youtubeClient.getLoginDetails().then(details => {
-            setLoginStatus(loginStatus.initialize(details));
+            setLoginStatus(l => l.initialize(details));
         }).catch(console.error);
-    }, [youtubeClient]);
+    }, []);
 
     const batchRefreshChannels = useCallback((pageToken?: string) => {
+        if (!youtubeClient.isLoggedIn()) {
+            setLoginStatus(new LoginPending());
+            return;
+        }
         youtubeClient.getChannels(pageToken).then(data => {
             store.addChannels(data);
-            setChannels(store.channels);
+            setChannels({ ...store.channels });
         }).catch(console.error);
     }, [youtubeClient, store, setChannels]);
 
     const batchRefreshPlaylistItems = useCallback((channel: Channel, pageToken?: string) => {
+        if (!youtubeClient.isLoggedIn()) {
+            setLoginStatus(new LoginPending());
+            return;
+        }
+
         youtubeClient.getPlaylistItems(channel, pageToken).then(data => {
             store.addPlaylistItems(data);
-            setPlayListItems(store.playlistItems);
+            setPlayListItems({ ...store.playlistItems });
         }).catch(console.error);
     }, [youtubeClient, store, setPlayListItems]);
 
@@ -65,11 +74,7 @@ function App() {
                 setChannels(store.channels);
             }).catch(console.error);
         }
-    }, [youtubeClient, loginStatus, store]);
-
-    // TODO: I need to set up a way of updating a given batch of playlists or channels (basing 
-    // on the channelId, pageToken tuple or pageToken respectively) when any is found to be stale
-    // i.e. has a timestamp that is earlier than current timestamp by more than the selected TTL.
+    }, [loginStatus, channels]);
 
     return (
         <LoginStatusContext.Provider value={loginStatus}>
