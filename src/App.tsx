@@ -65,7 +65,7 @@ function App() {
                 }
             }).catch(console.error);
         }
-    }, [youtubeClient, loginStatus]);
+    }, [loginStatus]);
 
     useEffect(() => {
         if (JSON.stringify(channels) === "{}" && loginStatus instanceof LoginFinalized) {

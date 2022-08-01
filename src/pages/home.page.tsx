@@ -76,7 +76,7 @@ export default function HomePage({ refreshChannelBatch, refreshPlaylistItemBatch
     return (<div className="flex w-100 h-100vh">
         {/*Sidebar */}
         <div className="sidebar w-20 h-100">
-            <div className="h-10 w-100 p-10"><img className="logo" src={logo} /></div>
+            <div className="h-10 w-100 p-10"><img className="logo" src={logo} alt="YouHedge logo" /></div>
             <div className="scrollview h-90 w-100" onWheel={onScrollChannels}>
                 {channels ? Object.values(channels)
                     .sort((a, b) => a.position - b.position).map(chan =>
@@ -94,7 +94,10 @@ export default function HomePage({ refreshChannelBatch, refreshPlaylistItemBatch
                 {playlistItems ? Object.values(playlistItems)
                     .filter((v) => v.channelId === selectedChannel?.id)
                     .sort((a, b) => a.position - b.position).map(item =>
-                        <Link to={`/player/${item.videoId}`} key={item.videoId}>
+                        <Link
+                            to={`/player/${item.videoId}?title=${item.title}`}
+                            key={item.videoId}
+                        >
                             <PlaylistItemCard
                                 item={item}
                             />

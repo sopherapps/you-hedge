@@ -25,7 +25,7 @@ export default function WelcomePage({ initLogin }: { initLogin: () => void }) {
                     <SwitchCase condition={LoginInitialized}>
                         <p>
                             Please visit URL
-                            <a target="_blank" href={(loginStatus?.details as LoginDetails)?.verificationUrl}>
+                            <a target="_blank" rel="noreferrer" href={(loginStatus?.details as LoginDetails)?.verificationUrl}>
                                 <strong>{(loginStatus?.details as LoginDetails)?.verificationUrl}</strong>
                             </a>
                         </p>
