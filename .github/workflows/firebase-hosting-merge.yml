@@ -12,9 +12,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: |
-        npm install
-        npm run test 
-        REACT_APP_API_BASE_URL=${{ secrets.REACT_APP_API_BASE_URL }} npm run react-build
+          npm install
+          npm run test 
+          REACT_APP_API_BASE_URL=${{ secrets.REACT_APP_API_BASE_URL }} npm run react-build
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: '${{ secrets.GITHUB_TOKEN }}'
