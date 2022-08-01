@@ -86,7 +86,7 @@ export class YoutubeClient {
                 this.authDetails = await refreshToken(this.apiBaseUrl, { refresh_token: authDetails.refreshToken });
                 this.dumpToSessionStorage();
                 this.startTokenRefresh();
-            }, authDetails.expiresIn * 1000);
+            }, (authDetails.expiresIn - 5) * 1000);
         }
     }
 
