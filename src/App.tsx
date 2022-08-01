@@ -40,7 +40,7 @@ function App() {
             store.addChannels(data);
             setChannels({ ...store.channels });
         }).catch(console.error);
-    }, [youtubeClient, store, setChannels]);
+    }, []);
 
     const batchRefreshPlaylistItems = useCallback((channel: Channel, pageToken?: string) => {
         if (!youtubeClient.isLoggedIn()) {
@@ -52,7 +52,7 @@ function App() {
             store.addPlaylistItems(data);
             setPlayListItems({ ...store.playlistItems });
         }).catch(console.error);
-    }, [youtubeClient, store, setPlayListItems]);
+    }, []);
 
     /**
      * Effects
@@ -71,7 +71,7 @@ function App() {
         if (JSON.stringify(channels) === "{}" && loginStatus instanceof LoginFinalized) {
             youtubeClient.getChannels().then((channelList) => {
                 store.addChannels(channelList);
-                setChannels(store.channels);
+                setChannels({ ...store.channels });
             }).catch(console.error);
         }
     }, [loginStatus, channels]);

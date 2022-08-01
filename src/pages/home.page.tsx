@@ -45,7 +45,6 @@ export default function HomePage({ refreshChannelBatch, refreshPlaylistItemBatch
                 .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())[0];
             latestChannel?.nextPageToken && refreshChannelBatch(latestChannel?.nextPageToken);
         }
-
     }, [channels, refreshChannelBatch]);
 
     const getMorePlaylistItems = useCallback((ev: WheelEvent) => {
@@ -67,7 +66,6 @@ export default function HomePage({ refreshChannelBatch, refreshPlaylistItemBatch
      * Effects
      */
     useEffect(() => {
-        refreshChannelBatch();
         return () => {
             onScrollPlaylistItems.cancel();
             onScrollChannels.cancel();
