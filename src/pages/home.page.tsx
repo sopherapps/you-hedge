@@ -1,4 +1,3 @@
-import { ChannelBatchRefreshFunc, PlaylistItemBatchRefreshFunc } from "../lib/types/funcs";
 import logo from "../lib/assets/img/logo.svg";
 import { useCallback, useContext, useEffect, useMemo, useState, WheelEvent } from "react";
 import { Channel } from "../lib/types/dtos";
@@ -9,8 +8,8 @@ import { Link } from "react-router-dom";
 import debounce from "lodash.debounce";
 
 interface IHomeProps {
-    refreshChannelBatch: ChannelBatchRefreshFunc,
-    refreshPlaylistItemBatch: PlaylistItemBatchRefreshFunc
+    refreshChannelBatch: (pageToken?: string) => void,
+    refreshPlaylistItemBatch: (channel: Channel, pageToken?: string) => void
 }
 
 export default function HomePage({ refreshChannelBatch, refreshPlaylistItemBatch }: IHomeProps) {

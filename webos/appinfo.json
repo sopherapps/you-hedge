@@ -1,0 +1,13 @@
+{
+  "id": "com.sopherapps.app.youhedge",
+  "version": "0.0.1",
+  "vendor": "SopherApps",
+  "type": "web",
+  "main": "index.html",
+  "title": "YouHedge",
+  "icon": "icon.png",
+  "largeIcon": "largeIcon.png",
+  "appDescription": "Protect your mental health by watching only the YouTube videos you actually subscribed to",
+  "splashBackground": "splashScreen.png",
+  "iconColor": "#1a1c1d"
+}

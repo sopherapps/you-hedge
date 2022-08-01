@@ -1,17 +1,18 @@
 # YouHedge
 
-A WebOS application to sidestep the mentally-degrading YouTube news feed and only view channels subscribed to.
+A Web application to sidestep the mentally-degrading YouTube news feed and only view channels subscribed to.
+
+**The webOS version of the app is found in the [./webos](./webos/) folder.**
 
 ## Dependencies
 
-- [webOS v4.0+](https://www.lg.com/global/business/webos)
 - [nodejs v16+](https://nodejs.org/en/)
 - [reactjs v18+](https://reactjs.org/)
 - [react router v6+](https://reactrouter.com/)
+- [webOS v4.0+](https://www.lg.com/global/business/webos) for webOS app
 
-## Quick Start
+## Quick Start (web)
 
-- Ensure you have the [webOS CLI](https://webostv.developer.lge.com/sdk/command-line-interface/installation/) and [webOS simulator](https://webostv.developer.lge.com/sdk/Simulator/installation/) installed.
 - Clone the repo
 
 ```shell
@@ -31,14 +32,32 @@ cp .example.env .env
 yarn install
 ```
 
-- Build the app
+- Start the app
 
 ```shell
-yarn build
+yarn start
+```
+
+- Open the browser at [localhost:3000](http://localhost:3000) if it is not yet open already
+
+## Quick Start (webOS)
+
+- Ensure you have the [webOS CLI](https://webostv.developer.lge.com/sdk/command-line-interface/installation/) and [webOS simulator](https://webostv.developer.lge.com/sdk/Simulator/installation/) installed.
+- Clone the repo
+
+```shell
+git clone git@github.com:sopherapps/you-hedge.git
+```
+
+- Build the webOS app
+
+```shell
+cd you-hedge
+yarn webos-build
 ```
 
 - Open the webOS simulator
-- In the simulator, Select 'launch app' and select the .ipk file on the root of this project folder
+- In the simulator, Select 'launch app' and select the .ipk file in the root of the `you-hedge` folder
 
 ## Design
 
@@ -59,23 +78,23 @@ yarn build
 ### Design Decisions:
 
 - Use react and react-router to create a single page application
-- Use gapi to login with google, and make requests to the YouTube data api v3
-- Save auth token in session storage
-- cache YouTube data api requests in session storage for a TTL of upto 5 minutes. 
-  This is already being done on the backend. The requests had to be shifted to the backend to avoind the exposure
-  of Google API client secrets and API keys.
+- Move all requests sent to YuoTube to [a separate backend](https://github.com/sopherapps/you-hedge-back) to avoid the exposure of Google API client secrets and API keys.
+- Save all data in session storage for the sake of the webOS app
 - Use the YouTube iframe to play the youtube videos themselves
 
 ### Project Structure
 
-The project in divided along the main lines of display (`pages`), data persistence (`store`) and 
-backend integration (`client`).
+The project (`src`) is divided along the main lines of display (`pages` and `components`), business logic (`lib`).
 
 - `pages` folder contains all the pages/screens to be displayed by the app
-- `dtos` folder contains the Data Transfer Objects used in the application
-- `store` folder contains the interface to the store that stores the app's data
-- `client` folder contains the functionality to interface with the backend 
-- `lib` folder contains `components`, common `utils` and common `assets`.
+- `components` folder contains all reusable reactjs components for the app
+- `lib` folder contains the business logic that is separate from display
+  - `store.ts` file contains the interface to the store that stores the app's data
+  - `client` folder contains the interface to the back end API
+  - `types` folder contains a number of types that are used in the app
+    - `dtos.ts` contains the types that are actually relevant within the app as data transfer objects
+    - `http.ts` contains a number of types representing HTTP requests and responses as expected from the back end.
+    - `state.ts` contains the separate states the entire app could be in. This is separate from the data it will have. For example the app behaves differently when authenticated as opposed to when it is not authenticated.
 
 ## How to Test
 
