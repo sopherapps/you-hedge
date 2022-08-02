@@ -2,7 +2,9 @@ import { useMemo } from "react";
 import { PlaylistItem } from "../lib/types/dtos";
 
 export default function PlaylistItemCard({ item }: { item: PlaylistItem }) {
-    const title = useMemo(() => `${item.title.slice(0, 140).trimEnd()}`, [item]);
+    const title = useMemo(
+        () => `${item.title.slice(0, 60).trimEnd()}${item.title.length > 60 ? "..." : ""}`,
+        [item]);
 
     return <div className="card playlist-item-card h-100">
         <div className="card-header h-70 w-100">
