@@ -49,15 +49,8 @@ yarn start
 git clone git@github.com:sopherapps/you-hedge.git
 ```
 
-- Build the webOS app
-
-```shell
-cd you-hedge
-yarn webos-build
-```
-
 - Open the webOS simulator
-- In the simulator, Select 'launch app' and select the .ipk file in the root of the `you-hedge` folder
+- In the simulator, Select 'launch app' from 'tools' and select the `webos` folder in the root of the `you-hedge` folder.
 
 ## Design
 

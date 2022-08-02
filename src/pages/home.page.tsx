@@ -75,7 +75,7 @@ export default function HomePage({ refreshChannelBatch, refreshPlaylistItemBatch
     return (<div className="flex w-100 h-100vh">
         {/*Sidebar */}
         <div className="sidebar w-20 h-100">
-            <div className="h-10 w-100 p-10"><img className="logo" src={logo} alt="YouHedge logo" /></div>
+            <div className="logo-header h-10 w-100 p-10"><img className="logo" src={logo} alt="YouHedge logo" /></div>
             <div className="scrollview h-90 w-100" onWheel={onScrollChannels}>
                 {channels ? Object.values(channels)
                     .sort((a, b) => a.position - b.position).map(chan =>
