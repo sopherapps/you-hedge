@@ -35,13 +35,11 @@
 ::-webkit-scrollbar-thumb {
   background-color: var(--darkish);
   border-radius: 1rem;
-  /* border: 5px solid var(--dark); */
   width: 0.5rem;
 }
 
 ::-webkit-scrollbar-thumb:hover {
   background-color: var(--dark-x1_5);
-  /* border: 4px solid #f4f4f4 */
 }
 
 /* set button(top and bottom of the scrollbar) */
@@ -506,7 +504,7 @@ h6 {
 /* buttons */
 .btn {
   cursor: pointer;
-  border: 1px solid transparent;
+  border: 0.1rem solid transparent;
   outline: none;
   vertical-align: middle;
   background-color: inherit;
@@ -560,18 +558,18 @@ h6 {
 }
 
 .card {
-  border: 0.5px solid var(--darkish);
+  border: 0.1rem solid var(--darkish);
   border-radius: 2%;
 }
 
 /* Sidebar */
 .sidebar {
   background-color: var(--dark-x2);
-  border: 0.5px solid var(--darkish);
+  border: 0.1rem solid var(--darkish);
 }
 
 .sidebar .logo-header {
-  border-bottom: 0.5px solid var(--darkish);
+  border-bottom: 0.1rem solid var(--darkish);
 }
 
 .scrollview {
@@ -582,6 +580,7 @@ h6 {
 
 .scrollview .card {
   border-right: none;
+  border-top: none;
 }
 
 .scrollview::-webkit-scrollbar,
@@ -611,13 +610,9 @@ h6 {
 /* content-area*/
 .content-area {
   overflow-y: scroll;
+  overflow-x: hidden;
 }
 
 .playlist-item-card .card-body {
   overflow-y: scroll;
-}
-
-.content-area .card {
-  border: 1px solid var(--darkish);
-  border-radius: 2.5px;
 }
