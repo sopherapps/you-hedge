@@ -119,12 +119,13 @@ yarn test
 ## TODO
 
 - [x] Playlists for channels other than those got at the start are not being returned.
-- [ ] On mobile, the wheel event is not being fired.
+- [x] On mobile, the wheel event is not being fired.
 - [ ] On mobile, the UI is quite terrible with regards to the layout. Fix it.
 - [ ] Add loading indicators on welcome page, home page (on clicking a channel)
 - [ ] Increase the size of the controls of the YouTube player
 - [ ] Fix the refreshing of the access token. For some reason, it keeps timing out.
 - [ ] Fix the icon added to webos. Give it more padding as opposed to the favicon
+- [ ] Add animations when loading playlist items and moving from screen to screen.
 
 ## Acknowledgments
 
