@@ -30,9 +30,9 @@ export default function HomePage({ refreshChannelBatch, refreshPlaylistItemBatch
 
         if (channel.timestamp < lowerTimestampBound) {
             refreshChannelBatch(channel.pageToken);
-            refreshPlaylistItemBatch(channel, channel.pageToken);
+            refreshPlaylistItemBatch(channel);
         } else if (fetchedChannelIds[channel.id] === undefined) {
-            refreshPlaylistItemBatch(channel, channel.pageToken);
+            refreshPlaylistItemBatch(channel);
             setFetchedChannelIds({ ...fetchedChannelIds, [channel.id]: true });
         }
         setSelectedChannel(channel);
