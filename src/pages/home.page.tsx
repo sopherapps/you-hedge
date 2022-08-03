@@ -1,4 +1,5 @@
 import logo from "../lib/assets/img/logo.svg";
+import smallLogo from "../lib/assets/img/small_logo.svg";
 import { useCallback, useContext, useEffect, useMemo, useState, WheelEvent } from "react";
 import { Channel } from "../lib/types/dtos";
 import { ChannelsContext, PlaylistItemsContext } from "../lib/contexts";
@@ -87,8 +88,11 @@ export default function HomePage({ refreshChannelBatch, refreshPlaylistItemBatch
 
     return (<div className="flex w-100 h-100vh">
         {/*Sidebar */}
-        <div className="sidebar w-20 h-100">
-            <div className="logo-header h-10 w-100 p-10"><img className="logo" src={logo} alt="YouHedge logo" /></div>
+        <div className="sidebar w-20 w-10-tablet h-100">
+            <div className="logo-header h-10 w-100 tablet-text-center">
+                <img className="logo desktop tv" src={logo} alt="YouHedge logo" />
+                <img className="logo tablet-inline" src={smallLogo} alt="YouHedge logo" />
+            </div>
             <div className="scrollview h-90 w-100" onWheel={onScrollChannels} {...swipeChannelListHandlers}>
                 {channels ? Object.values(channels)
                     .sort((a, b) => a.position - b.position).map(chan =>
@@ -101,8 +105,8 @@ export default function HomePage({ refreshChannelBatch, refreshPlaylistItemBatch
             </div>
         </div>
         {/* main content area */}
-        <div className="content-area w-80 h-100" onWheel={onScrollPlaylistItems} {...swipePlaylistItemsListHandlers}>
-            <div className="grid grid-4-cols grid-3-rows w-100 h-100 px-5 py-2">
+        <div className="content-area w-80 h-100 w-90-tablet" onWheel={onScrollPlaylistItems} {...swipePlaylistItemsListHandlers}>
+            <div className="grid grid-4-cols grid-3-rows w-100 h-100 px-5 py-3 px-2-tablet mobile-grid-1 small-tablet-grid-2 tablet-grid-3">
                 {playlistItems ? Object.values(playlistItems)
                     .filter((v) => v.channelId === selectedChannel?.id)
                     .sort((a, b) => a.position - b.position).map(item =>
