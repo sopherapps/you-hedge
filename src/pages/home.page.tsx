@@ -5,7 +5,7 @@ import { Channel } from "../lib/types/dtos";
 import { ChannelsContext, PlaylistItemsContext } from "../lib/contexts";
 import ChannelCard from "../components/ChannelCard";
 import PlaylistItemCard from "../components/PlaylistItemCard";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import debounce from "lodash.debounce";
 import { SwipeEventData, useSwipeable } from "react-swipeable";
 
@@ -18,10 +18,17 @@ export default function HomePage({ refreshChannelBatch, refreshPlaylistItemBatch
     /**
      * State
      */
+    const [searchParams, setSearchParams] = useSearchParams();
+    const selectedChannelId = searchParams.get("channelId");
     const channels = useContext(ChannelsContext);
     const playlistItems = useContext(PlaylistItemsContext);
+    const visibleChannels = useMemo(() => Object.values(channels)
+        .sort((a, b) => a.position - b.position), [channels]);
     const [fetchedChannelIds, setFetchedChannelIds] = useState<{ [key: string]: boolean }>({});
-    const [selectedChannel, setSelectedChannel] = useState<Channel>();
+    const [selectedChannel, setSelectedChannel] = useState<Channel>(channels[selectedChannelId || visibleChannels[0]?.id]);
+    const visiblePlayListItems = useMemo(() => Object.values(playlistItems)
+        .filter((v) => v.channelId === selectedChannel?.id)
+        .sort((a, b) => a.position - b.position), [playlistItems, selectedChannel?.id]);
 
     /**
      * Callbacks
@@ -38,7 +45,8 @@ export default function HomePage({ refreshChannelBatch, refreshPlaylistItemBatch
             setFetchedChannelIds({ ...fetchedChannelIds, [channel.id]: true });
         }
         setSelectedChannel(channel);
-    }, [fetchedChannelIds, refreshChannelBatch, refreshPlaylistItemBatch]);
+        setSearchParams({ channelId: channel.id });
+    }, [fetchedChannelIds, refreshChannelBatch, refreshPlaylistItemBatch, setSearchParams]);
 
     const getMoreChannels = useCallback((ev: WheelEvent | SwipeEventData) => {
         // @ts-ignore
@@ -94,22 +102,23 @@ export default function HomePage({ refreshChannelBatch, refreshPlaylistItemBatch
                 <img className="logo tablet-inline" src={smallLogo} alt="YouHedge logo" />
             </div>
             <div className="scrollview h-90 w-100" onWheel={onScrollChannels} {...swipeChannelListHandlers}>
-                {channels ? Object.values(channels)
-                    .sort((a, b) => a.position - b.position).map(chan =>
+                {visibleChannels.length > 0 ?
+                    visibleChannels.map(chan =>
                         <ChannelCard
                             channel={chan}
                             onClick={handleChannelClick}
                             key={chan.id}
-                        />) : <div>No channels yet</div>
+                        />)
+                    :
+                    <div>No channels yet</div>
                 }
             </div>
         </div>
         {/* main content area */}
         <div className="content-area w-80 h-100 w-90-tablet" onWheel={onScrollPlaylistItems} {...swipePlaylistItemsListHandlers}>
             <div className="grid grid-4-cols grid-3-rows w-100 h-100 px-5 py-3 px-2-tablet mobile-grid-1 small-tablet-grid-2 tablet-grid-3">
-                {playlistItems ? Object.values(playlistItems)
-                    .filter((v) => v.channelId === selectedChannel?.id)
-                    .sort((a, b) => a.position - b.position).map(item =>
+                {visiblePlayListItems.length > 0 ?
+                    visiblePlayListItems.map(item =>
                         <Link
                             to={`/player/${item.videoId}?title=${item.title}`}
                             key={item.videoId}
@@ -118,7 +127,9 @@ export default function HomePage({ refreshChannelBatch, refreshPlaylistItemBatch
                                 item={item}
                             />
                         </Link>
-                    ) : <div>No Videos yet</div>
+                    )
+                    :
+                    <div>No Videos yet</div>
                 }
             </div>
         </div>
