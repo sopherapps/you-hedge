@@ -121,12 +121,23 @@ yarn test
 - [x] Playlists for channels other than those got at the start are not being returned.
 - [x] On mobile, the wheel event is not being fired.
 - [x] On mobile, the UI is quite terrible with regards to the layout. Fix it.
-- [ ] The grace period between login initialization and retrieval is too small.
-- [ ] Add loading indicators on welcome page, home page (on clicking a channel)
-- [ ] Increase the size of the controls of the YouTube player
+- [x] The grace period between login initialization and retrieval is too small. This was due an nginx-uwsgi timeout. I added the configurations below to the nginx file for the domain 
+
+    ```
+    localtion / {
+        #....
+        uwsgi_read_timeout 300s;
+        proxy_read_timeout 300s;
+        proxy_connect_timeout 300s;
+        proxy_send_timeout 300s;
+        }
+    ```
+- [x] Add loading indicators on welcome page, home page (on clicking a channel)
+- [ ] Increase the size of the controls of the YouTube player - may not be possible. I have added a few more details in the iframe
 - [ ] Fix the refreshing of the access token. For some reason, it keeps timing out.
-- [ ] Fix the icon added to webos. Give it more padding as opposed to the favicon
+- [x] Fix the icon added to webos. Give it more padding as opposed to the favicon
 - [ ] Add animations when loading playlist items and moving from screen to screen.
+- [x] Be able to return to the old screen after visiting the youtube iframe
 
 ## Acknowledgments
 
