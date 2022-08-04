@@ -12,7 +12,7 @@ export default function WelcomePage({ initLogin }: { initLogin: () => void }) {
 
     return (
         <div className="flex justify-center align-center h-100vh v-100vw ">
-            <div className="cta slide-from-clear">
+            <div className="cta">
                 <img src={logo} className="logo" alt="logo" />
                 <p className="intro">
                     YouHedge protects your mental health by ensuring
