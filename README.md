@@ -134,7 +134,7 @@ yarn test
     ```
 - [x] Add loading indicators on welcome page, home page (on clicking a channel)
 - [x] Increase the size of the controls of the YouTube player - may not be possible. I have added a few more details in the iframe
-- [ ] Fix the refreshing of the access token. For some reason, it keeps timing out.
+- [x] Fix the refreshing of the access token. For some reason, it keeps timing out.
 - [x] Fix the icon added to webos. Give it more padding as opposed to the favicon
 - [ ] Add animations when loading playlist items and moving from screen to screen.
 - [x] Be able to return to the old screen after visiting the youtube iframe

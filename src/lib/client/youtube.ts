@@ -26,12 +26,15 @@ export class YoutubeClient {
      */
     private loadFromSessionStorage() {
         const dataString = window.sessionStorage.getItem(this.sessionStorageKey) || "{}";
-        const { apiBaseUrl, authDetails } = JSON.parse(dataString);
+        const { apiBaseUrl, authDetails, refreshTokenTaskHandle } = JSON.parse(dataString);
         this.apiBaseUrl = apiBaseUrl || process.env.REACT_APP_API_BASE_URL;
 
         if (authDetails?.expiresAt && authDetails.expiresAt > new Date()) {
             this.authDetails = authDetails;
+            this.refreshTokenTaskHandle = refreshTokenTaskHandle;
             this.startTokenRefresh();
+        } else if (refreshTokenTaskHandle) {
+            window.clearTimeout(refreshTokenTaskHandle);
         }
     }
 
@@ -40,7 +43,11 @@ export class YoutubeClient {
      */
     private dumpToSessionStorage() {
         window.sessionStorage.setItem(this.sessionStorageKey, JSON.stringify(
-            { authDetails: this.authDetails, apiBaseUrl: this.apiBaseUrl }
+            {
+                authDetails: this.authDetails,
+                apiBaseUrl: this.apiBaseUrl,
+                refreshTokenTaskHandle: this.refreshTokenTaskHandle,
+            }
         ));
     }
 
@@ -86,7 +93,7 @@ export class YoutubeClient {
                 this.authDetails = await refreshToken(this.apiBaseUrl, { refresh_token: authDetails.refreshToken });
                 this.dumpToSessionStorage();
                 this.startTokenRefresh();
-            }, (authDetails.expiresIn - 5) * 1000);
+            }, (authDetails.expiresIn - 300) * 1000);
         }
     }
 

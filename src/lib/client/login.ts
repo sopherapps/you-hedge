@@ -46,7 +46,7 @@ export async function getLoginResponse(apiBaseUrl: string, request: LoginStatusR
  * @param request
  */
 export async function refreshToken(apiBaseUrl: string, request: RefreshTokenRequest): Promise<AuthDetails> {
-    const url = `${apiBaseUrl}/auth/tv/refresh-token`;
+    const url = `${apiBaseUrl}/auth/refresh-token`;
     const response = await fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
