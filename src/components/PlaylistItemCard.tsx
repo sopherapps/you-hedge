@@ -6,7 +6,7 @@ export default function PlaylistItemCard({ item }: { item: PlaylistItem }) {
         () => `${item.title.slice(0, 60).trimEnd()}${item.title.length > 60 ? "..." : ""}`,
         [item]);
 
-    return <div className="card playlist-item-card h-100">
+    return <div className="card playlist-item-card slide-from-top h-100">
         <div className="card-header h-70 w-100">
             <img
                 src={item.imageUrl}

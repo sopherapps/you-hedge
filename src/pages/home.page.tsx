@@ -23,12 +23,12 @@ export default function HomePage({ refreshChannelBatch, refreshPlaylistItemBatch
     const channels = useContext(ChannelsContext);
     const playlistItems = useContext(PlaylistItemsContext);
     const visibleChannels = useMemo(() => Object.values(channels)
-        .sort((a, b) => a.position - b.position), [channels]);
+        .sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()), [channels]);
     const [fetchedChannelIds, setFetchedChannelIds] = useState<{ [key: string]: boolean }>({});
     const [selectedChannel, setSelectedChannel] = useState<Channel>(channels[selectedChannelId || visibleChannels[0]?.id]);
     const visiblePlayListItems = useMemo(() => Object.values(playlistItems)
         .filter((v) => v.channelId === selectedChannel?.id)
-        .sort((a, b) => a.position - b.position), [playlistItems, selectedChannel?.id]);
+        .sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()), [playlistItems, selectedChannel?.id]);
 
     /**
      * Callbacks
@@ -97,7 +97,7 @@ export default function HomePage({ refreshChannelBatch, refreshPlaylistItemBatch
     return (<div className="flex w-100 h-100vh">
         {/*Sidebar */}
         <div className="sidebar w-20 w-10-tablet h-100">
-            <div className="logo-header h-10 w-100 tablet-text-center">
+            <div className="logo-header slide-from-left h-10 w-100 tablet-text-center">
                 <img className="logo desktop tv" src={logo} alt="YouHedge logo" />
                 <img className="logo tablet-inline" src={smallLogo} alt="YouHedge logo" />
             </div>

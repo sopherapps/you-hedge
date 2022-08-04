@@ -5,7 +5,7 @@ export default function PlayerPage() {
     const [searchParams] = useSearchParams();
 
 
-    return <div className="h-100vh w-100vw">
+    return <div className="player h-100vh w-100vw">
         <iframe
             title={searchParams.get("title") || "A Youtube Video"}
             src={`https://www.youtube.com/embed/${videoId}?autoplay=1`}
@@ -19,6 +19,7 @@ export default function PlayerPage() {
             frameBorder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
+            className="slide-from-clear"
         />
     </div>
 }

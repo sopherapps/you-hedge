@@ -619,6 +619,11 @@ h6 {
   overflow-x: hidden;
 }
 
+/* player */
+.player {
+  overflow: hidden;
+}
+
 /*Progress bar*/
 .loader {
   width: 100%;
@@ -648,6 +653,22 @@ h6 {
   animation: borealisBar 1s ease infinite;
 }
 
+/* Animations */
+.slide-from-left {
+  animation: slide-from-left 2s ease 100ms;
+  animation-fill-mode: backwards;
+}
+
+.slide-from-top {
+  animation: slide-from-top 1s ease -100ms;
+  animation-fill-mode: backwards;
+}
+
+.slide-from-clear {
+  animation: slide-from-clear 1s cubic-bezier(.26, .53, .74, 1.48) 0.5s;
+  animation-fill-mode: backwards;
+}
+
 @keyframes borealisBar {
   0% {
     left: 0%;
@@ -673,6 +694,47 @@ h6 {
     width: 0%;
   }
 }
+
+@keyframes slide-from-left {
+  to {
+    opacity: 1;
+    width: 100%;
+  }
+
+  from {
+    opacity: 0;
+    width: 0%;
+  }
+
+}
+
+@keyframes slide-from-top {
+  to {
+    opacity: 1;
+    height: 100%;
+  }
+
+  from {
+    opacity: 0;
+    height: 0%;
+  }
+
+}
+
+@keyframes slide-from-clear {
+  to {
+    opacity: 1;
+    transform: scale(1, 1);
+  }
+
+  from {
+    opacity: 0;
+    transform: scale(0.5, 0.5);
+  }
+}
+
+
+
 
 /*Responsive */
 .mobile-inline,

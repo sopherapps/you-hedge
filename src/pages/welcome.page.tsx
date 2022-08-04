@@ -11,8 +11,8 @@ export default function WelcomePage({ initLogin }: { initLogin: () => void }) {
     const loginStatus = useContext(LoginStatusContext);
 
     return (
-        <div className="flex justify-center align-center h-100vh v-100vw">
-            <div className="cta">
+        <div className="flex justify-center align-center h-100vh v-100vw ">
+            <div className="cta slide-from-clear">
                 <img src={logo} className="logo" alt="logo" />
                 <p className="intro">
                     YouHedge protects your mental health by ensuring
