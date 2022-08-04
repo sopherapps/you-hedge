@@ -121,6 +121,7 @@ yarn test
 - [x] Playlists for channels other than those got at the start are not being returned.
 - [x] On mobile, the wheel event is not being fired.
 - [x] On mobile, the UI is quite terrible with regards to the layout. Fix it.
+- [ ] The grace period between login initialization and retrieval is too small.
 - [ ] Add loading indicators on welcome page, home page (on clicking a channel)
 - [ ] Increase the size of the controls of the YouTube player
 - [ ] Fix the refreshing of the access token. For some reason, it keeps timing out.

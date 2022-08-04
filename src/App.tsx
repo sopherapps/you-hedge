@@ -10,6 +10,7 @@ import PlayerPage from './pages/player.page';
 import { LoginFinalized, LoginInitialized, LoginPending, LoginStatus } from './lib/types/state';
 import { InstanceSwitch, SwitchCase } from './components/InstanceSwitch';
 import NotFoundPage from './pages/NotFound.page';
+import ProgressBar from './components/ProgressBar';
 
 const youtubeClient = new YoutubeClient();
 const store = new Store();
@@ -21,14 +22,19 @@ function App() {
     const [loginStatus, setLoginStatus] = useState<LoginStatus>(new LoginPending());
     const [channels, setChannels] = useState(store.channels);
     const [playlistItems, setPlayListItems] = useState(store.playlistItems);
+    const [isLoading, setIsLoading] = useState(false);
 
     /**
      * Callbacks
      */
     const initLogin = useCallback(() => {
-        youtubeClient.getLoginDetails().then(details => {
-            setLoginStatus(l => l.initialize(details));
-        }).catch(console.error);
+        setIsLoading(true);
+        youtubeClient.getLoginDetails()
+            .then(details => {
+                setLoginStatus(l => l.initialize(details));
+            })
+            .catch(console.error)
+            .finally(() => setIsLoading(false));
     }, []);
 
     const batchRefreshChannels = useCallback((pageToken?: string) => {
@@ -36,10 +42,15 @@ function App() {
             setLoginStatus(new LoginPending());
             return;
         }
-        youtubeClient.getChannels(pageToken).then(data => {
-            store.addChannels(data);
-            setChannels({ ...store.channels });
-        }).catch(console.error);
+
+        setIsLoading(true);
+        youtubeClient.getChannels(pageToken)
+            .then(data => {
+                store.addChannels(data);
+                setChannels({ ...store.channels });
+            })
+            .catch(console.error)
+            .finally(() => setIsLoading(false));
     }, []);
 
     const batchRefreshPlaylistItems = useCallback((channel: Channel, pageToken?: string) => {
@@ -48,10 +59,14 @@ function App() {
             return;
         }
 
-        youtubeClient.getPlaylistItems(channel, pageToken).then(data => {
-            store.addPlaylistItems(data);
-            setPlayListItems({ ...store.playlistItems });
-        }).catch(console.error);
+        setIsLoading(true);
+        youtubeClient.getPlaylistItems(channel, pageToken)
+            .then(data => {
+                store.addPlaylistItems(data);
+                setPlayListItems({ ...store.playlistItems });
+            })
+            .catch(console.error)
+            .finally(() => setIsLoading(false));
     }, []);
 
     /**
@@ -69,10 +84,14 @@ function App() {
 
     useEffect(() => {
         if (JSON.stringify(channels) === "{}" && loginStatus instanceof LoginFinalized) {
-            youtubeClient.getChannels().then((channelList) => {
-                store.addChannels(channelList);
-                setChannels({ ...store.channels });
-            }).catch(console.error);
+            setIsLoading(true);
+            youtubeClient.getChannels()
+                .then((channelList) => {
+                    store.addChannels(channelList);
+                    setChannels({ ...store.channels });
+                })
+                .catch(console.error)
+                .finally(() => setIsLoading(false));
         }
     }, [loginStatus, channels]);
 
@@ -80,6 +99,7 @@ function App() {
         <LoginStatusContext.Provider value={loginStatus}>
             <ChannelsContext.Provider value={channels}>
                 <PlaylistItemsContext.Provider value={playlistItems}>
+                    {isLoading && <ProgressBar />}
                     <BrowserRouter>
                         <Routes>
                             <Route path="/" element={

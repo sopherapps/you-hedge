@@ -10,8 +10,6 @@ import { LoginDetails } from "../lib/types/dtos";
 export default function WelcomePage({ initLogin }: { initLogin: () => void }) {
     const loginStatus = useContext(LoginStatusContext);
 
-    // TODO: Add the app loading as signing up is in progress.
-
     return (
         <div className="flex justify-center align-center h-100vh v-100vw">
             <div className="cta">
