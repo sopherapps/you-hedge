@@ -1,13 +1,12 @@
 import logo from "../lib/assets/img/logo.svg";
 import smallLogo from "../lib/assets/img/small_logo.svg";
-import { useCallback, useContext, useEffect, useMemo, useState, WheelEvent } from "react";
+import { useCallback, useContext, useMemo, useState } from "react";
 import { Channel } from "../lib/types/dtos";
 import { ChannelsContext, PlaylistItemsContext } from "../lib/contexts";
 import ChannelCard from "../components/ChannelCard";
 import PlaylistItemCard from "../components/PlaylistItemCard";
 import { Link, useSearchParams } from "react-router-dom";
-import debounce from "lodash.debounce";
-import { SwipeEventData, useSwipeable } from "react-swipeable";
+import YScrollView, { YScrollData } from "../components/YScrollView";
 
 interface IHomeProps {
     refreshChannelBatch: (pageToken?: string) => void,
@@ -48,22 +47,16 @@ export default function HomePage({ refreshChannelBatch, refreshPlaylistItemBatch
         setSearchParams({ channelId: channel.id });
     }, [fetchedChannelIds, refreshChannelBatch, refreshPlaylistItemBatch, setSearchParams]);
 
-    const getMoreChannels = useCallback((ev: WheelEvent | SwipeEventData) => {
-        // @ts-ignore
-        const isScrollDown = (ev?.dir === "Up" || ev.deltaY > 0);
-
-        if (channels && isScrollDown) {
+    const getMoreChannels = useCallback(({ isAtBottom, isDown }: YScrollData) => {
+        if (channels && isDown && isAtBottom) {
             const latestChannel = Object.values(channels)
                 .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())[0];
             latestChannel?.nextPageToken && refreshChannelBatch(latestChannel?.nextPageToken);
         }
     }, [channels, refreshChannelBatch]);
 
-    const getMorePlaylistItems = useCallback((ev: WheelEvent | SwipeEventData) => {
-        // @ts-ignore
-        const isScrollDown = (ev?.dir === "Up" || ev.deltaY > 0);
-
-        if (selectedChannel && playlistItems && isScrollDown) {
+    const getMorePlaylistItems = useCallback(({ isAtBottom, isDown }: YScrollData) => {
+        if (selectedChannel && playlistItems && isDown && isAtBottom) {
             const latestPlaylistItem = Object.values(playlistItems)
                 .filter((v) => v.channelId === selectedChannel.id)
                 .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())[0];
@@ -71,27 +64,6 @@ export default function HomePage({ refreshChannelBatch, refreshPlaylistItemBatch
             latestPlaylistItem?.nextPageToken && refreshPlaylistItemBatch(selectedChannel, latestPlaylistItem?.nextPageToken);
         }
     }, [playlistItems, selectedChannel, refreshPlaylistItemBatch]);
-
-    const onScrollChannels = useMemo(
-        () => debounce(getMoreChannels, 300), [getMoreChannels]);
-    const onScrollPlaylistItems = useMemo(
-        () => debounce(getMorePlaylistItems, 300), [getMorePlaylistItems]);
-    const swipeChannelListHandlers = useSwipeable({
-        onSwipedUp: onScrollChannels,
-    });
-    const swipePlaylistItemsListHandlers = useSwipeable({
-        onSwipedUp: onScrollPlaylistItems,
-    });
-
-    /**
-     * Effects
-     */
-    useEffect(() => {
-        return () => {
-            onScrollPlaylistItems.cancel();
-            onScrollChannels.cancel();
-        };
-    }, [onScrollChannels, onScrollPlaylistItems]);
 
 
     return (<div className="flex w-100 h-100vh">
@@ -101,7 +73,7 @@ export default function HomePage({ refreshChannelBatch, refreshPlaylistItemBatch
                 <img className="logo desktop tv" src={logo} alt="YouHedge logo" />
                 <img className="logo tablet-inline" src={smallLogo} alt="YouHedge logo" />
             </div>
-            <div className="scrollview h-90 w-100" onWheel={onScrollChannels} {...swipeChannelListHandlers}>
+            <YScrollView className="scrollview" onScroll={getMoreChannels} height="90%" width="100%">
                 {visibleChannels.length > 0 ?
                     visibleChannels.map(chan =>
                         <ChannelCard
@@ -110,13 +82,18 @@ export default function HomePage({ refreshChannelBatch, refreshPlaylistItemBatch
                             key={chan.id}
                         />)
                     :
-                    <div>No channels yet</div>
+                    <div className="my-2">No channels yet</div>
                 }
-            </div>
+            </YScrollView>
         </div>
         {/* main content area */}
-        <div className="content-area w-80 h-100 w-90-tablet" onWheel={onScrollPlaylistItems} {...swipePlaylistItemsListHandlers}>
-            <div className="grid grid-4-cols grid-3-rows w-100 h-100 px-5 py-3 px-2-tablet mobile-grid-1 small-tablet-grid-2 tablet-grid-3">
+        <div className="content-area w-80 h-100 w-90-tablet">
+            <YScrollView
+                onScroll={getMorePlaylistItems}
+                height="100%"
+                width="100%"
+                className="grid grid-4-cols grid-3-rows px-5 py-3 px-2-tablet mobile-grid-1 small-tablet-grid-2 tablet-grid-3"
+            >
                 {visiblePlayListItems.length > 0 ?
                     visiblePlayListItems.map(item =>
                         <Link
@@ -129,9 +106,9 @@ export default function HomePage({ refreshChannelBatch, refreshPlaylistItemBatch
                         </Link>
                     )
                     :
-                    <div>No Videos yet</div>
+                    <div className="my-2">No Videos yet</div>
                 }
-            </div>
+            </YScrollView>
         </div>
     </div>);
 }

@@ -619,8 +619,6 @@ h6 {
 
 .scrollview {
   background-color: inherit;
-  overflow-y: scroll;
-  overflow-x: hidden;
 }
 
 .scrollview .card {
@@ -653,11 +651,6 @@ h6 {
 }
 
 /* content-area*/
-.content-area {
-  overflow-y: scroll;
-  overflow-x: hidden;
-}
-
 .playlist-item-card .card-body {
   overflow-y: hidden;
   overflow-x: hidden;
