@@ -21,15 +21,18 @@ export default function WelcomePage({ initLogin }: { initLogin: () => void }) {
                 </p>
                 <InstanceSwitch value={loginStatus}>
                     <SwitchCase condition={LoginInitialized}>
-                        <p>
-                            Please visit URL
-                            <a target="_blank" rel="noreferrer" href={(loginStatus?.details as LoginDetails)?.verificationUrl}>
-                                <strong>{(loginStatus?.details as LoginDetails)?.verificationUrl}</strong>
-                            </a>
-                        </p>
-                        <p>
-                            And Feed in the Code <strong>{(loginStatus?.details as LoginDetails)?.userCode}</strong>
-                        </p>
+                        <div className="mb-3">
+                            <div className="mb-1">Please visit URL:</div>
+                            <div>
+                                <a target="_blank" rel="noreferrer" href={(loginStatus?.details as LoginDetails)?.verificationUrl}>
+                                    <strong className="h5">{(loginStatus?.details as LoginDetails)?.verificationUrl}</strong>
+                                </a>
+                            </div>
+                        </div>
+                        <div>
+                            <div className="mb-1">And Feed in the Code:</div>
+                            <strong className="h4">{(loginStatus?.details as LoginDetails)?.userCode}</strong>
+                        </div>
                     </SwitchCase>
                     <SwitchCase condition={LoginPending}>
                         <button onClick={initLogin} className="btn">
