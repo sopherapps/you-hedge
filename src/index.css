@@ -5,6 +5,7 @@
 :root {
   --dark-x2: #202124;
   --dark-x1_5: rgba(78, 84, 87, 0.16);
+  --dark-x1_25: #3c3c3c;
   --dark: #1a1c1d;
   --darkish: #4b5154;
   --light: #dbd8d3;
@@ -553,8 +554,9 @@ h6 {
 
 .btn:hover,
 .btn:active,
+.channel-card:hover,
 .active {
-  background-color: var(--dark-x1_5);
+  background-color: var(--dark-x1_25);
 }
 
 .btn-round {
@@ -566,6 +568,11 @@ h6 {
   height: 100%;
   max-width: 100%;
   width: auto;
+}
+
+/* avatar */
+.avatar {
+  background-color: inherit;
 }
 
 /* cta */
@@ -640,6 +647,7 @@ h6 {
   white-space: nowrap;
   text-overflow: ellipsis;
   padding-left: 10%;
+  background-color: inherit;
 }
 
 /* logo */

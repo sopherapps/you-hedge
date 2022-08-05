@@ -1,6 +1,6 @@
 import logo from "../lib/assets/img/logo.svg";
 import smallLogo from "../lib/assets/img/small_logo.svg";
-import { useCallback, useContext, useMemo, useState } from "react";
+import { useCallback, useContext, useLayoutEffect, useMemo, useState } from "react";
 import { Channel } from "../lib/types/dtos";
 import { ChannelsContext, PlaylistItemsContext } from "../lib/contexts";
 import ChannelCard from "../components/ChannelCard";
@@ -19,6 +19,8 @@ export default function HomePage({ refreshChannelBatch, refreshPlaylistItemBatch
      */
     const [searchParams, setSearchParams] = useSearchParams();
     const selectedChannelId = searchParams.get("channelId");
+    const selectedVideoId = searchParams.get("videoId");
+    const [playlistScrollTop, setPlayListScrollTop] = useState(0);
     const channels = useContext(ChannelsContext);
     const playlistItems = useContext(PlaylistItemsContext);
     const visibleChannels = useMemo(() => Object.values(channels)
@@ -65,6 +67,13 @@ export default function HomePage({ refreshChannelBatch, refreshPlaylistItemBatch
         }
     }, [playlistItems, selectedChannel, refreshPlaylistItemBatch]);
 
+    // Update the scroll view of playlists to have the selected item at the top
+    useLayoutEffect(() => {
+        if (selectedVideoId) {
+            const element = document.getElementById(selectedVideoId);
+            element && setPlayListScrollTop(element.getBoundingClientRect().top);
+        }
+    }, [selectedVideoId]);
 
     return (<div className="flex w-100 h-100vh">
         {/*Sidebar */}
@@ -73,13 +82,19 @@ export default function HomePage({ refreshChannelBatch, refreshPlaylistItemBatch
                 <img className="logo desktop tv" src={logo} alt="YouHedge logo" />
                 <img className="logo tablet-inline" src={smallLogo} alt="YouHedge logo" />
             </div>
-            <YScrollView className="scrollview" onScroll={getMoreChannels} height="90%" width="100%">
+            <YScrollView
+                className="scrollview"
+                onScroll={getMoreChannels}
+                height="90%"
+                width="100%"
+            >
                 {visibleChannels.length > 0 ?
                     visibleChannels.map(chan =>
                         <ChannelCard
                             channel={chan}
                             onClick={handleChannelClick}
                             key={chan.id}
+                            className={chan.id === selectedChannelId ? "active" : ""}
                         />)
                     :
                     <div className="my-2">No channels yet</div>
@@ -89,6 +104,7 @@ export default function HomePage({ refreshChannelBatch, refreshPlaylistItemBatch
         {/* main content area */}
         <div className="content-area w-80 h-100 w-90-tablet">
             <YScrollView
+                scrollTop={playlistScrollTop}
                 onScroll={getMorePlaylistItems}
                 height="100%"
                 width="100%"
@@ -100,6 +116,7 @@ export default function HomePage({ refreshChannelBatch, refreshPlaylistItemBatch
                             to={`/player/${item.videoId}?title=${item.title}`}
                             key={item.videoId}
                             className="card-link"
+                            id={item.videoId}
                         >
                             <PlaylistItemCard
                                 item={item}

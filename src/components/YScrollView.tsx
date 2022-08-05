@@ -14,9 +14,10 @@ interface IProps {
     height: string;
     width: string;
     onScroll: (e: YScrollData) => void;
+    scrollTop?: number;
 }
 
-export default function YScrollView({ children, className, onScroll, height, width }: IProps) {
+export default function YScrollView({ children, className, onScroll, height, width, scrollTop = 0 }: IProps) {
     const el = useRef<HTMLDivElement>(null);
 
     const isAtBottom = useCallback(() => {
@@ -50,6 +51,11 @@ export default function YScrollView({ children, className, onScroll, height, wid
             debouncedOnScroll.cancel();
         };
     }, [debouncedOnScroll]);
+
+    useEffect(() => {
+        console.log({ scrollTop });
+        el.current?.scrollTo({ behavior: "smooth", top: scrollTop });
+    }, [scrollTop]);
 
     return (
         <div onWheel={debouncedOnScroll} {...onSwipeHandlers} style={{ height, width }}>

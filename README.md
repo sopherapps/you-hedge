@@ -144,7 +144,7 @@ yarn test
 - [ ] Create a mobile app that is near-native speed
 - [ ] Fix the style of the favicon
 - [x] Fix the underlines on the playlist items' headings
-- [ ] On back, scroll back to the video that one had selected.
+- [x] On back, scroll back to the video that one had selected.
 - [ ] Add tests
 
 ## Acknowledgments
