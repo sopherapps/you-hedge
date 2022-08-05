@@ -53,7 +53,6 @@ export default function YScrollView({ children, className, onScroll, height, wid
     }, [debouncedOnScroll]);
 
     useEffect(() => {
-        console.log({ scrollTop });
         el.current?.scrollTo({ behavior: "smooth", top: scrollTop });
     }, [scrollTop]);
 
