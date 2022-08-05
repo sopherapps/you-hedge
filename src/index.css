@@ -656,6 +656,10 @@ h6 {
   overflow-x: hidden;
 }
 
+.card-link {
+  text-decoration: none;
+}
+
 /* player */
 .player {
   overflow: hidden;

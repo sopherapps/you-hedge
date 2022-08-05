@@ -143,7 +143,7 @@ yarn test
 - [x] Fix the repetitive signing in
 - [ ] Create a mobile app that is near-native speed
 - [ ] Fix the style of the favicon
-- [ ] FIx the underlines on the playlist items' headings
+- [x] Fix the underlines on the playlist items' headings
 - [ ] On back, scroll back to the video that one had selected.
 - [ ] Add tests
 

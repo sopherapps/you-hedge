@@ -15,7 +15,7 @@ export default function PlaylistItemCard({ item }: { item: PlaylistItem }) {
             />
         </div>
         <div className="card-body p-3 h-30 w-100">
-            <p className="h6 subtitle">{title}</p>
+            <p className="h6 mt-3 subtitle">{title}</p>
         </div>
     </div>
 }

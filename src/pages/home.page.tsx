@@ -99,6 +99,7 @@ export default function HomePage({ refreshChannelBatch, refreshPlaylistItemBatch
                         <Link
                             to={`/player/${item.videoId}?title=${item.title}`}
                             key={item.videoId}
+                            className="card-link"
                         >
                             <PlaylistItemCard
                                 item={item}
