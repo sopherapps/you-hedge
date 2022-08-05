@@ -142,7 +142,7 @@ yarn test
 - [x] Fix the scroll to only occur if the scroll view is at the bottom
 - [x] Fix the repetitive signing in
 - [ ] Create a mobile app that is near-native speed
-- [ ] Fix the style of the favicon
+- [x] Fix the style of the favicon
 - [x] Fix the underlines on the playlist items' headings
 - [x] On back, scroll back to the video that one had selected.
 - [ ] Add tests
