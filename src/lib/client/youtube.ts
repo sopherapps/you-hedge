@@ -1,3 +1,4 @@
+import { Db } from "../db";
 import { AuthDetails, Channel, LoginDetails, PlaylistItem } from "../types/dtos";
 import { HttpRequestHeaders, SubscriptionResponse, ChannelDetails, PlaylistItemListResponse } from "../types/http";
 import { getLoginResponse, initializeLogin, refreshToken } from "./login";
@@ -8,10 +9,12 @@ export class YoutubeClient {
     private apiBaseUrl: string = process.env.REACT_APP_API_BASE_URL || "";
     authDetails: AuthDetails | undefined;
     private refreshTokenTaskHandle: number | undefined;
-    private sessionStorageKey = "YoutubeClient";
+    private dbId = "YoutubeClient";
+    private db: Db;
 
-    constructor() {
-        this.loadFromSessionStorage();
+    constructor({ db }: { db: Db }) {
+        this.db = db;
+        this.loadFromDb();
     }
 
     /**
@@ -22,14 +25,14 @@ export class YoutubeClient {
     }
 
     /**
-     * Loads its attributes from the session storage
+     * Loads its attributes from the database
      */
-    private loadFromSessionStorage() {
-        const dataString = window.sessionStorage.getItem(this.sessionStorageKey) || "{}";
-        const { apiBaseUrl, authDetails, refreshTokenTaskHandle } = JSON.parse(dataString);
+    private loadFromDb() {
+        const { apiBaseUrl, authDetails, refreshTokenTaskHandle } = this.db.get(this.dbId) || {};
         this.apiBaseUrl = apiBaseUrl || process.env.REACT_APP_API_BASE_URL;
 
-        if (authDetails?.expiresAt && authDetails.expiresAt > new Date()) {
+        if (authDetails?.expiresAt && new Date(authDetails.expiresAt) > new Date()) {
+            authDetails.expiresAt = new Date(authDetails.expiresAt);
             this.authDetails = authDetails;
             this.refreshTokenTaskHandle = refreshTokenTaskHandle;
             this.startTokenRefresh();
@@ -39,16 +42,14 @@ export class YoutubeClient {
     }
 
     /**
-     * Dumps the client into the SessionStorage
+     * Saves the client into the database
      */
-    private dumpToSessionStorage() {
-        window.sessionStorage.setItem(this.sessionStorageKey, JSON.stringify(
-            {
-                authDetails: this.authDetails,
-                apiBaseUrl: this.apiBaseUrl,
-                refreshTokenTaskHandle: this.refreshTokenTaskHandle,
-            }
-        ));
+    private saveToDb() {
+        this.db.set(this.dbId, {
+            authDetails: this.authDetails,
+            apiBaseUrl: this.apiBaseUrl,
+            refreshTokenTaskHandle: this.refreshTokenTaskHandle,
+        });
     }
 
     /**
@@ -58,7 +59,7 @@ export class YoutubeClient {
         if (this.refreshTokenTaskHandle) {
             window.clearTimeout(this.refreshTokenTaskHandle);
         }
-        this.dumpToSessionStorage();
+        this.saveToDb();
     }
 
     /**
@@ -78,7 +79,7 @@ export class YoutubeClient {
             device_code: loginDetails.deviceCode,
             interval: loginDetails.interval
         });
-        this.dumpToSessionStorage();
+        this.saveToDb();
         this.startTokenRefresh();
     }
 
@@ -91,7 +92,7 @@ export class YoutubeClient {
         if (authDetails) {
             this.refreshTokenTaskHandle = window.setTimeout(async () => {
                 this.authDetails = await refreshToken(this.apiBaseUrl, { refresh_token: authDetails.refreshToken });
-                this.dumpToSessionStorage();
+                this.saveToDb();
                 this.startTokenRefresh();
             }, (authDetails.expiresIn - 300) * 1000);
         }
@@ -101,7 +102,7 @@ export class YoutubeClient {
      * Generates the headers for making the requests to the YouTube API endpoints
      * @throws Error("client is not yet authenticated.")
      */
-    private get_headers(): HttpRequestHeaders {
+    private getHeaders(): HttpRequestHeaders {
         if (!this.authDetails?.accessToken) {
             throw new Error("client is not yet authenticated.")
         }
@@ -146,7 +147,7 @@ export class YoutubeClient {
      */
     private async getSubscriptions(pageToken?: string): Promise<SubscriptionResponse> {
         const url = `${this.apiBaseUrl}/youtube/subscriptions${pageToken ? "?pageToken=" + pageToken : ""}`;
-        const headers = this.get_headers();
+        const headers = this.getHeaders();
         const response = await fetch(url, {
             method: "GET",
             headers,
@@ -163,7 +164,7 @@ export class YoutubeClient {
      */
     private async getChannelDetails(channelId: string): Promise<ChannelDetails> {
         const url = `${this.apiBaseUrl}/youtube/channels/${channelId}`;
-        const headers = this.get_headers();
+        const headers = this.getHeaders();
 
         const response = await fetch(url, {
             method: "GET",
@@ -183,7 +184,7 @@ export class YoutubeClient {
      */
     private async getPlaylistItemList(playlistId: string, pageToken?: string): Promise<PlaylistItemListResponse> {
         const url = `${this.apiBaseUrl}/youtube/playlist-items/${playlistId}${pageToken ? "?pageToken=" + pageToken : ""}`;
-        const headers = this.get_headers();
+        const headers = this.getHeaders();
 
         const response = await fetch(url, {
             method: "GET",

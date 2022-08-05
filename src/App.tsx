@@ -11,9 +11,10 @@ import { LoginFinalized, LoginInitialized, LoginPending, LoginStatus } from './l
 import { InstanceSwitch, SwitchCase } from './components/InstanceSwitch';
 import NotFoundPage from './pages/NotFound.page';
 import ProgressBar from './components/ProgressBar';
+import { LocalStorageDb, SessionStorageDb } from './lib/db';
 
-const youtubeClient = new YoutubeClient();
-const store = new Store();
+const youtubeClient = new YoutubeClient({ db: new LocalStorageDb() });
+const store = new Store({ db: new SessionStorageDb() });
 
 function App() {
     /**
@@ -72,6 +73,13 @@ function App() {
     /**
      * Effects
      */
+    useEffect(() => {
+        // Attempt to skip login if youtube client is already logged in
+        if (youtubeClient.isLoggedIn() && youtubeClient.authDetails) {
+            setLoginStatus(new LoginFinalized(youtubeClient.authDetails));
+        }
+    }, []);
+
     useEffect(() => {
         if (loginStatus instanceof LoginInitialized) {
             youtubeClient.finalizeLogin(loginStatus.details as LoginDetails).then(() => {

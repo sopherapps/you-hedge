@@ -1,3 +1,4 @@
+import { Db } from "./db";
 import { Channel, PlaylistItem } from "./types/dtos";
 
 /**
@@ -6,17 +7,19 @@ import { Channel, PlaylistItem } from "./types/dtos";
 export class Store {
     channels: { [key: string]: Channel } = {};
     playlistItems: { [key: string]: PlaylistItem } = {};
-    sessionStorageKey = "main.Store";
+    private dbId = "main.Store";
+    private db: Db;
 
-    constructor() {
-        this.loadFromSessionStorage();
+    constructor({ db }: { db: Db }) {
+        this.db = db;
+        this.loadFromDb();
     }
 
     /**
      * Handles the cleaning upp just before the Store is released to no longer be of use
      */
     destroy() {
-        this.dumpToSessionStorage();
+        this.saveToDb();
     }
 
     /**
@@ -27,7 +30,7 @@ export class Store {
         for (let channel of channels) {
             this.channels[channel.id] = channel;
         }
-        this.dumpToSessionStorage();
+        this.saveToDb();
     }
 
     /**
@@ -38,26 +41,22 @@ export class Store {
         for (let playlistItem of playlistItems) {
             this.playlistItems[playlistItem.id] = playlistItem;
         }
-        this.dumpToSessionStorage();
+        this.saveToDb();
     }
 
     /**
-     * Loads its attributes from the session storage
+     * Loads its attributes from the database
      */
-    private loadFromSessionStorage() {
-        const dataString = window.sessionStorage.getItem(this.sessionStorageKey) || "{}";
-        const { channels = {}, playlistItems = {} } = JSON.parse(dataString);
-
+    private loadFromDb() {
+        const { channels = {}, playlistItems = {} } = this.db.get(this.dbId) || {};
         this.channels = channels;
         this.playlistItems = playlistItems;
     }
 
     /**
-     * Dumps the client into the SessionStorage
+     * Dumps the client into the database
      */
-    private dumpToSessionStorage() {
-        window.sessionStorage.setItem(this.sessionStorageKey, JSON.stringify(
-            { channels: this.channels, playlistItems: this.playlistItems }
-        ));
+    private saveToDb() {
+        this.db.set(this.dbId, { channels: this.channels, playlistItems: this.playlistItems });
     }
 }

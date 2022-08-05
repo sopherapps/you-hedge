@@ -140,7 +140,7 @@ yarn test
 - [x] Be able to return to the old screen after visiting the youtube iframe
 - [x] Fix URL on welcome screen after login on mobile. It is a little skewed.
 - [x] Fix the scroll to only occur if the scroll view is at the bottom
-- [ ] Fix the repetitive signing in
+- [x] Fix the repetitive signing in
 - [ ] Create a mobile app that is near-native speed
 - [ ] Fix the style of the favicon
 - [ ] FIx the underlines on the playlist items' headings
