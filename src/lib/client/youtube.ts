@@ -11,6 +11,7 @@ export class YoutubeClient {
     private refreshTokenTaskHandle: number | undefined;
     private dbId = "YoutubeClient";
     private db: Db;
+    isRefreshing: boolean = false;
 
     constructor({ db }: { db: Db }) {
         this.db = db;
@@ -36,8 +37,30 @@ export class YoutubeClient {
             this.authDetails = authDetails;
             this.refreshTokenTaskHandle = refreshTokenTaskHandle;
             this.startTokenRefresh();
-        } else if (refreshTokenTaskHandle) {
+        } else if (authDetails?.refreshToken) {
+            this.refreshAuthDetails(authDetails)
+                .then(() => { this.startTokenRefresh(); })
+                .catch(console.error);
+        }
+        else if (refreshTokenTaskHandle) {
             window.clearTimeout(refreshTokenTaskHandle);
+        }
+    }
+
+    /**
+     * Refreshes stale auth details
+     * @param authDetails - the stale auth details
+     */
+    async refreshAuthDetails(authDetails: AuthDetails) {
+        this.isRefreshing = true;
+        try {
+            const data = await refreshToken(this.apiBaseUrl, { refresh_token: authDetails.refreshToken });
+            this.authDetails = data;
+            this.saveToDb();
+        } catch (error) {
+            throw error;
+        } finally {
+            this.isRefreshing = false;
         }
     }
 
@@ -91,8 +114,7 @@ export class YoutubeClient {
 
         if (authDetails) {
             this.refreshTokenTaskHandle = window.setTimeout(async () => {
-                this.authDetails = await refreshToken(this.apiBaseUrl, { refresh_token: authDetails.refreshToken });
-                this.saveToDb();
+                await this.refreshAuthDetails(authDetails);
                 this.startTokenRefresh();
             }, (authDetails.expiresIn - 300) * 1000);
         }

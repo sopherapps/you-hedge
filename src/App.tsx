@@ -77,7 +77,16 @@ function App() {
         // Attempt to skip login if youtube client is already logged in
         if (youtubeClient.isLoggedIn() && youtubeClient.authDetails) {
             setLoginStatus(new LoginFinalized(youtubeClient.authDetails));
+        } else if (youtubeClient.isRefreshing) {
+            setIsLoading(true);
+            window.setTimeout(() => {
+                if (youtubeClient.isLoggedIn() && youtubeClient.authDetails) {
+                    setLoginStatus(new LoginFinalized(youtubeClient.authDetails));
+                }
+                setIsLoading(false);
+            }, 1000);
         }
+
     }, []);
 
     useEffect(() => {
