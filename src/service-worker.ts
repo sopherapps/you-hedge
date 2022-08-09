@@ -81,6 +81,6 @@ self.addEventListener('message', (event) => {
 // Any other custom service worker logic can go here.
 self.addEventListener('message', event => {
   if (event.data && event.data.type === 'START_TOKEN_REFRESH') {
-    youtubeClient.startTokenRefresh();
+    youtubeClient.startTokenRefresh(self, true);
   }
 });

@@ -109,15 +109,15 @@ export class YoutubeClient {
     /**
      * Starts the Token refresh task
      */
-    startTokenRefresh(force: boolean = true) {
+    startTokenRefresh(instance: any = window, force: boolean = true) {
         const authDetails = this.authDetails;
 
         if (this.refreshTokenTaskHandle && force) {
-            window.clearTimeout(this.refreshTokenTaskHandle);
+            instance.clearTimeout(this.refreshTokenTaskHandle);
         }
 
         if (authDetails) {
-            this.refreshTokenTaskHandle = window.setTimeout(async () => {
+            this.refreshTokenTaskHandle = instance.setTimeout(async () => {
                 console.log("refreshing token");
                 await this.refreshAuthDetails(authDetails);
                 this.startTokenRefresh(false);
