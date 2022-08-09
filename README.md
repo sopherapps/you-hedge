@@ -141,11 +141,11 @@ yarn test
 - [x] Fix URL on welcome screen after login on mobile. It is a little skewed.
 - [x] Fix the scroll to only occur if the scroll view is at the bottom
 - [x] Fix the repetitive signing in
-- [ ] Create a mobile app that is near-native speed
 - [x] Fix the style of the favicon
 - [x] Fix the underlines on the playlist items' headings
 - [x] On back, scroll back to the video that one had selected.
 - [ ] Add tests
+- [ ] Make this a pwa (progressive web app)
 
 ## Acknowledgments
 
