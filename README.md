@@ -145,7 +145,7 @@ yarn test
 - [x] Fix the underlines on the playlist items' headings
 - [x] On back, scroll back to the video that one had selected.
 - [ ] Add tests
-- [ ] Make this a pwa (progressive web app)
+- [x] Make this a pwa (progressive web app)
 
 ## Acknowledgments
 

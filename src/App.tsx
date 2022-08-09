@@ -2,8 +2,6 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { LoginStatusContext, ChannelsContext, PlaylistItemsContext } from './lib/contexts';
 import WelcomePage from "./pages/welcome.page";
-import { YoutubeClient } from "./lib/client/youtube";
-import { Store } from './lib/store';
 import HomePage from './pages/home.page';
 import { AuthDetails, Channel, LoginDetails } from './lib/types/dtos';
 import PlayerPage from './pages/player.page';
@@ -11,10 +9,8 @@ import { LoginFinalized, LoginInitialized, LoginPending, LoginStatus } from './l
 import { InstanceSwitch, SwitchCase } from './components/InstanceSwitch';
 import NotFoundPage from './pages/NotFound.page';
 import ProgressBar from './components/ProgressBar';
-import { LocalStorageDb, SessionStorageDb } from './lib/db';
+import { store, youtubeClient } from './globals';
 
-const youtubeClient = new YoutubeClient({ db: new LocalStorageDb() });
-const store = new Store({ db: new SessionStorageDb() });
 
 function App() {
     /**

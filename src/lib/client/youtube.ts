@@ -36,10 +36,10 @@ export class YoutubeClient {
             authDetails.expiresAt = new Date(authDetails.expiresAt);
             this.authDetails = authDetails;
             this.refreshTokenTaskHandle = refreshTokenTaskHandle;
-            this.startTokenRefresh();
+            this._startTokenRefresh();
         } else if (authDetails?.refreshToken) {
             this.refreshAuthDetails(authDetails)
-                .then(() => { this.startTokenRefresh(); })
+                .then(() => { this._startTokenRefresh(); })
                 .catch(console.error);
         }
         else if (refreshTokenTaskHandle) {
@@ -103,20 +103,39 @@ export class YoutubeClient {
             interval: loginDetails.interval
         });
         this.saveToDb();
-        this.startTokenRefresh();
+        this._startTokenRefresh();
     }
 
     /**
      * Starts the Token refresh task
      */
-    private startTokenRefresh() {
+    startTokenRefresh(force: boolean = true) {
         const authDetails = this.authDetails;
+
+        if (this.refreshTokenTaskHandle && force) {
+            window.clearTimeout(this.refreshTokenTaskHandle);
+        }
 
         if (authDetails) {
             this.refreshTokenTaskHandle = window.setTimeout(async () => {
+                console.log("refreshing token");
                 await this.refreshAuthDetails(authDetails);
-                this.startTokenRefresh();
+                this.startTokenRefresh(false);
             }, (authDetails.expiresIn - 300) * 1000);
+        }
+    }
+
+    /**
+    * Starts the Token refresh task
+    */
+    private _startTokenRefresh() {
+        if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
+            console.log("Starting token refresh in service worker");
+            navigator.serviceWorker.ready.then((registration) => {
+                registration.active?.postMessage({ type: "START_TOKEN_REFRESH" });
+            })
+        } else {
+            return this.startTokenRefresh();
         }
     }
 

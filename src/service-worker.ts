@@ -13,6 +13,7 @@ import { ExpirationPlugin } from 'workbox-expiration';
 import { precacheAndRoute, createHandlerBoundToURL } from 'workbox-precaching';
 import { registerRoute } from 'workbox-routing';
 import { StaleWhileRevalidate } from 'workbox-strategies';
+import { youtubeClient } from './globals';
 
 declare const self: ServiceWorkerGlobalScope;
 
@@ -78,3 +79,8 @@ self.addEventListener('message', (event) => {
 });
 
 // Any other custom service worker logic can go here.
+self.addEventListener('message', event => {
+  if (event.data && event.data.type === 'START_TOKEN_REFRESH') {
+    youtubeClient.startTokenRefresh();
+  }
+});
