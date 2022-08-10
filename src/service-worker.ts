@@ -14,6 +14,7 @@ import { precacheAndRoute, createHandlerBoundToURL } from 'workbox-precaching';
 import { registerRoute } from 'workbox-routing';
 import { StaleWhileRevalidate } from 'workbox-strategies';
 import { localStorageDb } from './globals';
+import { refreshToken } from './lib/client/login';
 import { YoutubeClient } from './lib/client/youtube';
 
 declare const self: ServiceWorkerGlobalScope;
@@ -83,6 +84,6 @@ self.addEventListener('message', (event) => {
 self.addEventListener('message', event => {
   if (event.data && event.data.type === 'START_TOKEN_REFRESH') {
     const youtubeClient = new YoutubeClient({ db: localStorageDb, parent: self });
-    youtubeClient.startTokenRefresh(true);
+    youtubeClient.startTokenRefresh(true, event.source as Client);
   }
 });

@@ -1,3 +1,4 @@
+import { isServiceWorkerEnabled } from "../../globals";
 import { Db } from "../db";
 import { AuthDetails, Channel, LoginDetails, PlaylistItem } from "../types/dtos";
 import { HttpRequestHeaders, SubscriptionResponse, ChannelDetails, PlaylistItemListResponse } from "../types/http";
@@ -54,12 +55,15 @@ export class YoutubeClient {
      * Refreshes stale auth details
      * @param authDetails - the stale auth details
      */
-    async refreshAuthDetails(authDetails: AuthDetails) {
+    async refreshAuthDetails(authDetails: AuthDetails, client: Client | null = null) {
         this.isRefreshing = true;
         try {
             const data = await refreshToken(this.apiBaseUrl, { refresh_token: authDetails.refreshToken });
             this.authDetails = data;
             await this.saveToDb();
+            if (client) {
+                client.postMessage({ type: "TOKEN_REFRESHED", payload: data });
+            }
         } catch (error) {
             throw error;
         } finally {
@@ -112,7 +116,7 @@ export class YoutubeClient {
     /**
      * Starts the Token refresh task
      */
-    startTokenRefresh(force: boolean = true) {
+    startTokenRefresh(force: boolean = true, client: Client | null = null) {
         const authDetails = this.authDetails;
 
         if (this.refreshTokenTaskHandle && force) {
@@ -122,8 +126,8 @@ export class YoutubeClient {
         if (authDetails) {
             this.refreshTokenTaskHandle = this.parent?.setTimeout(async () => {
                 console.log("refreshing token");
-                await this.refreshAuthDetails(authDetails);
-                this.startTokenRefresh(false);
+                await this.refreshAuthDetails(authDetails, client);
+                this.startTokenRefresh(false, client);
             }, (authDetails.expiresIn - 300) * 1000);
         }
     }
@@ -132,11 +136,24 @@ export class YoutubeClient {
     * Starts the Token refresh task
     */
     private _startTokenRefresh() {
-        if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
-            console.log("Starting token refresh in service worker");
-            navigator.serviceWorker.ready.then((registration) => {
-                registration.active?.postMessage({ type: "START_TOKEN_REFRESH" });
-            })
+        if (isServiceWorkerEnabled) {
+            const authDetails = this.authDetails;
+
+            if (authDetails) {
+                console.log("Starting token refresh in service worker");
+                navigator.serviceWorker.addEventListener("message", event => {
+                    if (event?.data?.type === "TOKEN_REFRESHED") {
+                        this.authDetails = event.data.payload;
+                    }
+                });
+
+                navigator.serviceWorker.ready.then((registration) => {
+                    registration.active?.postMessage({
+                        type: "START_TOKEN_REFRESH"
+                    });
+                })
+            }
+
         } else {
             return this.startTokenRefresh();
         }
