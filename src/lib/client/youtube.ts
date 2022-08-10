@@ -10,14 +10,17 @@ export class YoutubeClient {
     authDetails: AuthDetails | undefined;
     private refreshTokenTaskHandle: number | undefined;
     private dbId = "YoutubeClient";
-    private db: Db;
+    public db: Db;
     isRefreshing: boolean = false;
-    parent: ServiceWorkerGlobalScope | Window;
+    parent: Window | ServiceWorkerGlobalScope;
 
-    constructor({ db, parent }: { db: Db, parent: ServiceWorkerGlobalScope | Window }) {
+    constructor({ db, parent }: { db: Db, parent: Window | ServiceWorkerGlobalScope }) {
         this.db = db;
         this.parent = parent;
-        this.loadFromDb().then(() => { }).catch(console.error);
+        this.isRefreshing = true;
+        this.loadFromDb()
+            .catch(console.error)
+            .finally(() => { this.isRefreshing = false; });
     }
 
     /**
@@ -43,7 +46,7 @@ export class YoutubeClient {
             await this.refreshAuthDetails(authDetails);
             this._startTokenRefresh();
         } else if (refreshTokenTaskHandle) {
-            this.parent?.clearTimeout(refreshTokenTaskHandle);
+            this.parent.clearTimeout(refreshTokenTaskHandle);
         }
     }
 
@@ -80,7 +83,7 @@ export class YoutubeClient {
      */
     async destroy() {
         if (this.refreshTokenTaskHandle) {
-            this.parent?.clearTimeout(this.refreshTokenTaskHandle);
+            this.parent.clearTimeout(this.refreshTokenTaskHandle);
         }
         await this.saveToDb();
     }
@@ -113,7 +116,7 @@ export class YoutubeClient {
         const authDetails = this.authDetails;
 
         if (this.refreshTokenTaskHandle && force) {
-            this.parent?.clearTimeout(this.refreshTokenTaskHandle);
+            this.parent.clearTimeout(this.refreshTokenTaskHandle);
         }
 
         if (authDetails) {

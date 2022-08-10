@@ -9,14 +9,19 @@ import { LoginFinalized, LoginInitialized, LoginPending, LoginStatus } from './l
 import { InstanceSwitch, SwitchCase } from './components/InstanceSwitch';
 import NotFoundPage from './pages/NotFound.page';
 import ProgressBar from './components/ProgressBar';
-import { store, youtubeClient } from './globals';
+import { YoutubeClient } from './lib/client/youtube';
+import { localStorageDb, sessionStorageDb } from './globals';
+import { Store } from './lib/store';
+
+const youtubeClient = new YoutubeClient({ db: localStorageDb, parent: window });
+const store = new Store({ db: sessionStorageDb });
 
 
 function App() {
     /**
      * States
      */
-    const [loginStatus, setLoginStatus] = useState<LoginStatus>(new LoginPending());
+    const [loginStatus, setLoginStatus] = useState<LoginStatus | null>(null);
     const [channels, setChannels] = useState(store.channels);
     const [playlistItems, setPlayListItems] = useState(store.playlistItems);
     const [isLoading, setIsLoading] = useState(false);
@@ -28,7 +33,7 @@ function App() {
         setIsLoading(true);
         youtubeClient.getLoginDetails()
             .then(details => {
-                setLoginStatus(l => l.initialize(details));
+                setLoginStatus(l => l && l.initialize(details));
             })
             .catch(console.error)
             .finally(() => setIsLoading(false));
@@ -78,9 +83,13 @@ function App() {
             window.setTimeout(() => {
                 if (youtubeClient.isLoggedIn() && youtubeClient.authDetails) {
                     setLoginStatus(new LoginFinalized(youtubeClient.authDetails));
+                } else {
+                    setLoginStatus(new LoginPending());
                 }
                 setIsLoading(false);
             }, 1000);
+        } else {
+            setLoginStatus(new LoginPending());
         }
 
     }, []);
@@ -117,6 +126,7 @@ function App() {
                         <Routes>
                             <Route path="/" element={
                                 <InstanceSwitch value={loginStatus}>
+                                    <SwitchCase condition={null} children={<WelcomePage initLogin={initLogin} />} />
                                     <SwitchCase condition={LoginPending} children={<WelcomePage initLogin={initLogin} />} />
                                     <SwitchCase condition={LoginInitialized} children={<WelcomePage initLogin={initLogin} />} />
                                     <SwitchCase condition={LoginFinalized} children={

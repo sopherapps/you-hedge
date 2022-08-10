@@ -26,7 +26,6 @@ export class LocalStorageDb implements Db {
 
     constructor(instance: LocalForage) {
         this.instance = instance;
-        this.clear().then(() => { }).catch(console.error);
     }
 
     async get(id: string): Promise<{ [key: string]: any; } | null> {

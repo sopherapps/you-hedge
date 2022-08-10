@@ -1,4 +1,4 @@
-import { useCallback, useContext, useLayoutEffect, useRef } from "react";
+import { useCallback, useContext, useEffect, useLayoutEffect, useRef } from "react";
 import { BrowserHistory } from "history";
 import { UNSAFE_NavigationContext, useNavigate, useParams, useSearchParams } from "react-router-dom"
 import useScreenSize from "../lib/hooks/useScreenSize";
@@ -47,7 +47,7 @@ export default function PlayerPage() {
         }
     }, [navigation, navigate, videoId]);
 
-    useLayoutEffect(() => {
+    useEffect(() => {
         setIframeSize(screenSize);
     }, [screenSize, setIframeSize, orientation]);
 

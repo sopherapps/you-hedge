@@ -21,6 +21,9 @@ export const SwitchCase: React.FC<ISwitchCaseProps> = ({ children }) => <>{child
  * It will render nothing (or null) if the value is of an instance that is not provided for
  */
 export const InstanceSwitch: React.FC<ISwitchProps> = ({ children, value }) => {
-    return children.find(element => value instanceof element.props.condition) || null;
+    if (value === null) {
+        return children.find(element => element.props.condition === null) || null;
+    }
+    return children.find(element => element.props.condition && value instanceof element.props.condition) || null;
 }
 
