@@ -1,5 +1,3 @@
-import localforage from "localforage";
-
 export interface Db {
     /**
      * Retrieves an object saved in the store
