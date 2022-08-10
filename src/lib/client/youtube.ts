@@ -1,4 +1,4 @@
-import { isServiceWorkerEnabled } from "../../globals";
+import { apiBaseUrl as globalApiBaseUrl, isServiceWorkerEnabled } from "../../globals";
 import { Db } from "../db";
 import { AuthDetails, Channel, LoginDetails, PlaylistItem } from "../types/dtos";
 import { HttpRequestHeaders, SubscriptionResponse, ChannelDetails, PlaylistItemListResponse } from "../types/http";
@@ -7,7 +7,7 @@ import { getLoginResponse, initializeLogin, refreshToken } from "./login";
 
 
 export class YoutubeClient {
-    private apiBaseUrl: string = process.env.REACT_APP_API_BASE_URL || "";
+    private apiBaseUrl: string = globalApiBaseUrl || "";
     authDetails: AuthDetails | undefined;
     private refreshTokenTaskHandle: number | undefined;
     private dbId = "YoutubeClient";
@@ -36,7 +36,7 @@ export class YoutubeClient {
      */
     private async loadFromDb() {
         const { apiBaseUrl, authDetails, refreshTokenTaskHandle } = await this.db.get(this.dbId) || {};
-        this.apiBaseUrl = apiBaseUrl || process.env.REACT_APP_API_BASE_URL;
+        this.apiBaseUrl = apiBaseUrl || globalApiBaseUrl;
 
         if (authDetails?.expiresAt && new Date(authDetails.expiresAt) > new Date()) {
             authDetails.expiresAt = new Date(authDetails.expiresAt);

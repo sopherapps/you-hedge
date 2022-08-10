@@ -145,6 +145,16 @@ yarn test
 - [x] Fix the underlines on the playlist items' headings
 - [x] On back, scroll back to the video that one had selected.
 - [ ] Add tests
+  - [x] login client tests
+  - [ ] youtube client tests
+  - [ ] db tests
+  - [ ] store tests
+  - [ ] pages tests
+    - [ ] welcome page
+    - [ ] not found page
+    - [ ] home page
+    - [ ] player page
+  - [ ] App tests
 - [x] Make this a pwa (progressive web app)
 
 ## Acknowledgments
