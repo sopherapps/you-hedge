@@ -14,7 +14,6 @@ import { precacheAndRoute, createHandlerBoundToURL } from 'workbox-precaching';
 import { registerRoute } from 'workbox-routing';
 import { StaleWhileRevalidate } from 'workbox-strategies';
 import { localStorageDb } from './globals';
-import { refreshToken } from './lib/client/login';
 import { YoutubeClient } from './lib/client/youtube';
 
 declare const self: ServiceWorkerGlobalScope;
