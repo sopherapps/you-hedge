@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useLayoutEffect, useRef } from "react";
+import { useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef } from "react";
 import { BrowserHistory } from "history";
 import { UNSAFE_NavigationContext, useNavigate, useParams, useSearchParams } from "react-router-dom"
 import useScreenSize from "../lib/hooks/useScreenSize";
@@ -12,6 +12,7 @@ export default function PlayerPage() {
     const orientation = useScreenOrientation();
     const navigate = useNavigate();
     const navigation = useContext(UNSAFE_NavigationContext).navigator as BrowserHistory;
+    const paddingBottom = useMemo(() => ["portrait-primary", "portrait-secondary"].includes(orientation) ? "5%" : "2%", [orientation]);
 
     const goBack = useCallback(() => {
         navigate(-1);
@@ -63,8 +64,10 @@ export default function PlayerPage() {
             src={`https://www.youtube.com/embed/${videoId}?autoplay=1`}
             style={{
                 overflow: "hidden",
-                height: screenSize[1],
-                width: screenSize[0],
+                height: "100%",
+                width: "100%",
+                paddingBottom,
+                backgroundColor: "#000",
             }}
             frameBorder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
