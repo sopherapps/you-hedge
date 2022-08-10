@@ -12,7 +12,7 @@ export default function PlayerPage() {
     const orientation = useScreenOrientation();
     const navigate = useNavigate();
     const navigation = useContext(UNSAFE_NavigationContext).navigator as BrowserHistory;
-    const paddingBottom = useMemo(() => ["portrait-primary", "portrait-secondary"].includes(orientation) ? "5%" : "2%", [orientation]);
+    const paddingBottom = useMemo(() => ["portrait-primary", "portrait-secondary"].includes(orientation) ? "10%" : "2%", [orientation]);
 
     const goBack = useCallback(() => {
         navigate(-1);
