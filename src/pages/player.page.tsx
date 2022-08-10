@@ -1,10 +1,15 @@
-import { useCallback, useContext, useLayoutEffect } from "react";
+import { useCallback, useContext, useEffect, useLayoutEffect, useRef } from "react";
 import { BrowserHistory } from "history";
 import { UNSAFE_NavigationContext, useNavigate, useParams, useSearchParams } from "react-router-dom"
+import useScreenSize from "../lib/hooks/useScreenSize";
+import useScreenOrientation from "../lib/hooks/useScreenOrientation";
 
 export default function PlayerPage() {
     const { videoId } = useParams();
     const [searchParams] = useSearchParams();
+    const iframeRef = useRef<HTMLIFrameElement | null>(null);
+    const screenSize = useScreenSize();
+    const orientation = useScreenOrientation();
     const navigate = useNavigate();
     const navigation = useContext(UNSAFE_NavigationContext).navigator as BrowserHistory;
 
@@ -12,6 +17,26 @@ export default function PlayerPage() {
         navigate(-1);
     }, [navigate]);
 
+    const setIframeSize = useCallback(([width, height]: [number, number]) => {
+        const iframe = iframeRef.current;
+        if (iframe) {
+            const src = iframe.getAttribute('src');
+            if (src) {
+                if (iframe.contentWindow) {
+                    console.log("new size", [width, height]);
+                    iframe.contentWindow.postMessage(JSON.stringify({
+                        'event': 'command',
+                        'func': "setSize",
+                        'args': [width, height]
+                    }), '*');
+                }
+            }
+        }
+    }, [iframeRef]);
+
+    /**
+     * effects
+     */
     useLayoutEffect(() => {
         if (navigation) {
             navigation.listen(({ action, location }) => {
@@ -23,6 +48,10 @@ export default function PlayerPage() {
         }
     }, [navigation, navigate, videoId]);
 
+    useEffect(() => {
+        setIframeSize(screenSize);
+    }, [screenSize, setIframeSize, orientation]);
+
 
     return <div className="player h-100vh w-100vw">
         <div className="floating-btn text-center" onClick={goBack}>
@@ -30,10 +59,9 @@ export default function PlayerPage() {
             <div className="text-center">Back</div>
         </div>
         <iframe
+            ref={iframeRef}
             title={searchParams.get("title") || "A Youtube Video"}
             src={`https://www.youtube.com/embed/${videoId}?autoplay=1`}
-            height="100%"
-            width="100%"
             style={{
                 overflow: "hidden",
                 height: "100%",
