@@ -12,14 +12,14 @@ export class Store {
 
     constructor({ db }: { db: Db }) {
         this.db = db;
-        this.loadFromDb();
+        this.loadFromDb().then(() => { }).catch(console.error);
     }
 
     /**
      * Handles the cleaning upp just before the Store is released to no longer be of use
      */
     destroy() {
-        this.saveToDb();
+        this.saveToDb().then(() => { }).catch(console.error);
     }
 
     /**
@@ -30,7 +30,7 @@ export class Store {
         for (let channel of channels) {
             this.channels[channel.id] = channel;
         }
-        this.saveToDb();
+        this.saveToDb().then(() => { }).catch(console.error);
     }
 
     /**
@@ -41,14 +41,14 @@ export class Store {
         for (let playlistItem of playlistItems) {
             this.playlistItems[playlistItem.id] = playlistItem;
         }
-        this.saveToDb();
+        this.saveToDb().then(() => { }).catch(console.error);
     }
 
     /**
      * Loads its attributes from the database
      */
-    private loadFromDb() {
-        const { channels = {}, playlistItems = {} } = this.db.get(this.dbId) || {};
+    private async loadFromDb() {
+        const { channels = {}, playlistItems = {} } = await this.db.get(this.dbId) || {};
         this.channels = channels;
         this.playlistItems = playlistItems;
     }
@@ -56,7 +56,7 @@ export class Store {
     /**
      * Dumps the client into the database
      */
-    private saveToDb() {
-        this.db.set(this.dbId, { channels: this.channels, playlistItems: this.playlistItems });
+    private async saveToDb() {
+        await this.db.set(this.dbId, { channels: this.channels, playlistItems: this.playlistItems });
     }
 }

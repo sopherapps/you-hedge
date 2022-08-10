@@ -12,10 +12,12 @@ export class YoutubeClient {
     private dbId = "YoutubeClient";
     private db: Db;
     isRefreshing: boolean = false;
+    parent: ServiceWorkerGlobalScope | Window;
 
-    constructor({ db }: { db: Db }) {
+    constructor({ db, parent }: { db: Db, parent: ServiceWorkerGlobalScope | Window }) {
         this.db = db;
-        this.loadFromDb();
+        this.parent = parent;
+        this.loadFromDb().then(() => { }).catch(console.error);
     }
 
     /**
@@ -28,8 +30,8 @@ export class YoutubeClient {
     /**
      * Loads its attributes from the database
      */
-    private loadFromDb() {
-        const { apiBaseUrl, authDetails, refreshTokenTaskHandle } = this.db.get(this.dbId) || {};
+    private async loadFromDb() {
+        const { apiBaseUrl, authDetails, refreshTokenTaskHandle } = await this.db.get(this.dbId) || {};
         this.apiBaseUrl = apiBaseUrl || process.env.REACT_APP_API_BASE_URL;
 
         if (authDetails?.expiresAt && new Date(authDetails.expiresAt) > new Date()) {
@@ -38,12 +40,10 @@ export class YoutubeClient {
             this.refreshTokenTaskHandle = refreshTokenTaskHandle;
             this._startTokenRefresh();
         } else if (authDetails?.refreshToken) {
-            this.refreshAuthDetails(authDetails)
-                .then(() => { this._startTokenRefresh(); })
-                .catch(console.error);
-        }
-        else if (refreshTokenTaskHandle) {
-            window.clearTimeout(refreshTokenTaskHandle);
+            await this.refreshAuthDetails(authDetails);
+            this._startTokenRefresh();
+        } else if (refreshTokenTaskHandle) {
+            this.parent?.clearTimeout(refreshTokenTaskHandle);
         }
     }
 
@@ -56,7 +56,7 @@ export class YoutubeClient {
         try {
             const data = await refreshToken(this.apiBaseUrl, { refresh_token: authDetails.refreshToken });
             this.authDetails = data;
-            this.saveToDb();
+            await this.saveToDb();
         } catch (error) {
             throw error;
         } finally {
@@ -67,8 +67,8 @@ export class YoutubeClient {
     /**
      * Saves the client into the database
      */
-    private saveToDb() {
-        this.db.set(this.dbId, {
+    private async saveToDb() {
+        await this.db.set(this.dbId, {
             authDetails: this.authDetails,
             apiBaseUrl: this.apiBaseUrl,
             refreshTokenTaskHandle: this.refreshTokenTaskHandle,
@@ -78,11 +78,11 @@ export class YoutubeClient {
     /**
      * Handles any clean up when the client is no longer needed
      */
-    destroy() {
+    async destroy() {
         if (this.refreshTokenTaskHandle) {
-            window.clearTimeout(this.refreshTokenTaskHandle);
+            this.parent?.clearTimeout(this.refreshTokenTaskHandle);
         }
-        this.saveToDb();
+        await this.saveToDb();
     }
 
     /**
@@ -102,22 +102,22 @@ export class YoutubeClient {
             device_code: loginDetails.deviceCode,
             interval: loginDetails.interval
         });
-        this.saveToDb();
+        await this.saveToDb();
         this._startTokenRefresh();
     }
 
     /**
      * Starts the Token refresh task
      */
-    startTokenRefresh(instance: any = window, force: boolean = true) {
+    startTokenRefresh(force: boolean = true) {
         const authDetails = this.authDetails;
 
         if (this.refreshTokenTaskHandle && force) {
-            instance.clearTimeout(this.refreshTokenTaskHandle);
+            this.parent?.clearTimeout(this.refreshTokenTaskHandle);
         }
 
         if (authDetails) {
-            this.refreshTokenTaskHandle = instance.setTimeout(async () => {
+            this.refreshTokenTaskHandle = this.parent?.setTimeout(async () => {
                 console.log("refreshing token");
                 await this.refreshAuthDetails(authDetails);
                 this.startTokenRefresh(false);
