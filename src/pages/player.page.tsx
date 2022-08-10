@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useLayoutEffect, useRef } from "react";
+import { useCallback, useContext, useLayoutEffect, useRef } from "react";
 import { BrowserHistory } from "history";
 import { UNSAFE_NavigationContext, useNavigate, useParams, useSearchParams } from "react-router-dom"
 import useScreenSize from "../lib/hooks/useScreenSize";
@@ -23,7 +23,6 @@ export default function PlayerPage() {
             const src = iframe.getAttribute('src');
             if (src) {
                 if (iframe.contentWindow) {
-                    console.log("new size", [width, height]);
                     iframe.contentWindow.postMessage(JSON.stringify({
                         'event': 'command',
                         'func': "setSize",
@@ -48,7 +47,7 @@ export default function PlayerPage() {
         }
     }, [navigation, navigate, videoId]);
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         setIframeSize(screenSize);
     }, [screenSize, setIframeSize, orientation]);
 
@@ -64,8 +63,8 @@ export default function PlayerPage() {
             src={`https://www.youtube.com/embed/${videoId}?autoplay=1`}
             style={{
                 overflow: "hidden",
-                height: "100%",
-                width: "100%",
+                height: screenSize[1],
+                width: screenSize[0],
             }}
             frameBorder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
