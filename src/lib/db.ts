@@ -50,3 +50,25 @@ export class SessionStorageDb extends LocalStorageDb {
         this.clear().then(() => { }).catch(console.error);
     }
 }
+
+/**
+ * DummyDb stores data in memory
+ */
+export class DummyDb implements Db {
+    private _data: { [key: string]: any } = {};
+
+    async get(id: string): Promise<{ [key: string]: any; } | null> {
+        return this._data[id];
+    }
+    async set(id: string, obj: { [key: string]: any; }): Promise<void> {
+        this._data[id] = obj;
+    }
+
+    async clear(): Promise<void> {
+        for (const key in this._data) {
+            if (Object.prototype.hasOwnProperty.call(this._data, key)) {
+                delete this._data[key];
+            }
+        }
+    }
+}

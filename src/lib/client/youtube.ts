@@ -4,6 +4,7 @@ import { AuthDetails, Channel, LoginDetails, PlaylistItem } from "../types/dtos"
 import { HttpRequestHeaders, SubscriptionResponse, ChannelDetails, PlaylistItemListResponse } from "../types/http";
 import { getLoginResponse, initializeLogin, refreshToken } from "./login";
 
+type IParent = Pick<Window, "setTimeout" | "clearTimeout">;
 
 
 export class YoutubeClient {
@@ -13,9 +14,9 @@ export class YoutubeClient {
     private dbId = "YoutubeClient";
     public db: Db;
     isRefreshing: boolean = false;
-    parent: Window | ServiceWorkerGlobalScope;
+    parent: IParent;
 
-    constructor({ db, parent }: { db: Db, parent: Window | ServiceWorkerGlobalScope }) {
+    constructor({ db, parent }: { db: Db, parent: IParent }) {
         this.db = db;
         this.parent = parent;
         this.isRefreshing = true;

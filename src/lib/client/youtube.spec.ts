@@ -1,20 +1,22 @@
 import localforage from "localforage";
+import * as memoryDriver from "localforage-driver-memory";
 import { sessionStorageDb } from "../../globals";
 import { mockRefreshTokenRequest } from "../../mocks/requests";
 import { mockLoginDetailsResponse, mockLoginStatusResponse, mockManyChannelsResponse, mockPlaylistItemListResponses, mockRefreshTokenResponse, mockSubscriptionsResponses } from "../../mocks/responses";
-import { SessionStorageDb } from "../db";
+import { Db, DummyDb } from "../db";
 import { AuthDetails, Channel, LoginDetails, PlaylistItem } from "../types/dtos";
 import { YoutubeClient } from "./youtube";
 
 let youtubeClient: YoutubeClient;
-const testDb = new SessionStorageDb(localforage.createInstance({
-    name: "youhedge-test-db",
-    storeName: "sessionStorage",
-    driver: localforage.LOCALSTORAGE,
-}));
+const testDb: Db = new DummyDb();
+const mockWindow = {
+    setTimeout,
+    clearTimeout,
+}
 
-beforeEach(async () => {
-    youtubeClient = new YoutubeClient({ db: sessionStorageDb, parent: window });
+
+beforeEach(() => {
+    youtubeClient = new YoutubeClient({ db: sessionStorageDb, parent: mockWindow });
 });
 
 afterEach(async () => {
