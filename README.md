@@ -151,7 +151,7 @@ yarn test
   - [x] store tests
   - [ ] pages tests
     - [ ] welcome page
-    - [ ] not found page
+    - [x] not found page
     - [ ] home page
     - [ ] player page
   - [ ] App tests
