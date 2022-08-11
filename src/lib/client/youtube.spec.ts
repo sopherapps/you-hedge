@@ -1,22 +1,16 @@
-import localforage from "localforage";
-import * as memoryDriver from "localforage-driver-memory";
-import { sessionStorageDb } from "../../globals";
+import { MockLocalForage } from "../../mocks/localforage";
 import { mockRefreshTokenRequest } from "../../mocks/requests";
 import { mockLoginDetailsResponse, mockLoginStatusResponse, mockManyChannelsResponse, mockPlaylistItemListResponses, mockRefreshTokenResponse, mockSubscriptionsResponses } from "../../mocks/responses";
-import { Db, DummyDb } from "../db";
+import { Db, SessionStorageDb } from "../db";
 import { AuthDetails, Channel, LoginDetails, PlaylistItem } from "../types/dtos";
 import { YoutubeClient } from "./youtube";
 
 let youtubeClient: YoutubeClient;
-const testDb: Db = new DummyDb();
-const mockWindow = {
-    setTimeout,
-    clearTimeout,
-}
 
+let testDb: Db = new SessionStorageDb(new MockLocalForage());
 
 beforeEach(() => {
-    youtubeClient = new YoutubeClient({ db: sessionStorageDb, parent: mockWindow });
+    youtubeClient = new YoutubeClient({ db: testDb, parent: window });
 });
 
 afterEach(async () => {
@@ -83,6 +77,7 @@ test("finalizeLogin checks for login status after login initialisation", async (
 test("startTokenRefresh starts the cycle of refreshing the access token", (done) => {
     youtubeClient._stopRefresh();
     const isRefreshRunningBeforeStart = youtubeClient._isRefreshInitialized();
+    youtubeClient.authDetails = new AuthDetails(mockLoginStatusResponse);
 
     youtubeClient.startTokenRefresh();
     setTimeout(() => {
@@ -120,6 +115,8 @@ test("getChannels returns a list of channels", async () => {
         }
     }
 
+    youtubeClient.authDetails = new AuthDetails(mockLoginStatusResponse);
+
     const firstSetOfChannels = await youtubeClient.getChannels();
     const setOfChannelsForYutth = await youtubeClient.getChannels("yutth");
     const setOfChannelsForPrev = await youtubeClient.getChannels("prev");
@@ -131,6 +128,7 @@ test("getChannels returns a list of channels", async () => {
 
 test("getPlaylistItems gets a list of playlist items for playlist id", async () => {
     let channels: Channel[] = [];
+    youtubeClient.authDetails = new AuthDetails(mockLoginStatusResponse);
 
     for (const key in mockSubscriptionsResponses) {
         if (Object.prototype.hasOwnProperty.call(mockSubscriptionsResponses, key)) {

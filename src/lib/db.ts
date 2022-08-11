@@ -51,14 +51,15 @@ export class SessionStorageDb extends LocalStorageDb {
     }
 }
 
+
 /**
- * DummyDb stores data in memory
+ * MemoryDb stores data in memory
  */
-export class DummyDb implements Db {
+export class MemoryDb implements Db {
     private _data: { [key: string]: any } = {};
 
     async get(id: string): Promise<{ [key: string]: any; } | null> {
-        return this._data[id];
+        return this._data[id] || null;
     }
     async set(id: string, obj: { [key: string]: any; }): Promise<void> {
         this._data[id] = obj;
