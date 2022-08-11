@@ -9,10 +9,15 @@ export class Store {
     playlistItems: { [key: string]: PlaylistItem } = {};
     private dbId = "main.Store";
     private db: Db;
+    isLoading: boolean = false;
 
     constructor({ db }: { db: Db }) {
         this.db = db;
-        this.loadFromDb().then(() => { }).catch(console.error);
+        this.isLoading = true;
+        this.loadFromDb()
+            .then(() => { })
+            .catch(console.error)
+            .finally(() => this.isLoading = false);
     }
 
     /**
@@ -42,6 +47,26 @@ export class Store {
             this.playlistItems[playlistItem.id] = playlistItem;
         }
         this.saveToDb().then(() => { }).catch(console.error);
+    }
+
+    /**
+     * Clears the state of the store
+     * This is useful when testing thus the presence of the "_" prefix
+     */
+    async _clearState() {
+        for (const key in this.channels) {
+            if (Object.prototype.hasOwnProperty.call(this.channels, key)) {
+                delete this.channels[key];
+            }
+        }
+
+        for (const key in this.playlistItems) {
+            if (Object.prototype.hasOwnProperty.call(this.playlistItems, key)) {
+                delete this.playlistItems[key];
+            }
+        }
+
+        await this.db.clear();
     }
 
     /**

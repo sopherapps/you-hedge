@@ -148,7 +148,7 @@ yarn test
   - [x] login client tests
   - [x] youtube client tests
   - [x] db tests
-  - [ ] store tests
+  - [x] store tests
   - [ ] pages tests
     - [ ] welcome page
     - [ ] not found page
