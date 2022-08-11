@@ -83,6 +83,11 @@ self.addEventListener('message', (event) => {
 self.addEventListener('message', event => {
   if (event.data && event.data.type === 'START_TOKEN_REFRESH') {
     const youtubeClient = new YoutubeClient({ db: localStorageDb, parent: self });
-    youtubeClient.startTokenRefresh(true, event.source as Client);
+    const handle = self.setInterval(() => {
+      if (!youtubeClient.isRefreshing) {
+        youtubeClient.scheduleNextTokenRefreshTask(true, event.source as Client);
+        self.clearInterval(handle);
+      }
+    }, 100);
   }
 });

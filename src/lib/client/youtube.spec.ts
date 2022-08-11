@@ -74,6 +74,62 @@ test("finalizeLogin checks for login status after login initialisation", async (
     }));
 }, 3000);
 
+
+test("startTokenRefresh in service worker starts the cycle of refreshing the access token", (done) => {
+    if ('serviceWorker' in navigator) {
+        const db = new SessionStorageDb(new MockLocalForage());
+        const swEnabledYoutubeClient = new YoutubeClient({ db, parent: window });
+        swEnabledYoutubeClient._stopRefresh();
+        swEnabledYoutubeClient.shouldRefreshInServiceWorker = true;
+        const swSelf: Window = self;
+        swEnabledYoutubeClient.authDetails = new AuthDetails(mockLoginStatusResponse);
+        db.set("YoutubeClient", { authDetails: swEnabledYoutubeClient.authDetails });
+        const isRefreshRunningBeforeStart = swEnabledYoutubeClient._isRefreshInitialized();
+        const authDetailsBeforeLogin = swEnabledYoutubeClient.authDetails;
+
+        const swHandler = (event: any) => {
+            if (event.data && event.data.type === 'START_TOKEN_REFRESH') {
+                const swYoutubeClient = new YoutubeClient({ db, parent: swSelf });
+                const handle = swSelf.setInterval(() => {
+                    if (!swYoutubeClient.isRefreshing) {
+                        swYoutubeClient.scheduleNextTokenRefreshTask(true, event.source as Client);
+                        swSelf.clearInterval(handle);
+                    }
+                }, 100);
+            }
+        };
+
+        swSelf.addEventListener('message', swHandler);
+        // @ts-ignore
+        navigator.serviceWorker.register("/", { self: swSelf }).then(() => {
+            swEnabledYoutubeClient.startTokenRefresh();
+
+            setTimeout(() => {
+                const authDetailsAfterRefresh = swEnabledYoutubeClient.authDetails;
+                const isRefreshRunningAfterStart = swEnabledYoutubeClient._isRefreshInitialized();
+                const expectedExpiresAt = new Date();
+                expectedExpiresAt.setSeconds(
+                    expectedExpiresAt.getSeconds() + mockRefreshTokenResponse.expires_in);
+                const { expiresAt, ...expectedNewAuthDetails } = new AuthDetails({
+                    ...mockRefreshTokenRequest, ...mockRefreshTokenResponse
+                });
+                const { expiresAt: _, ...expectedOldAuthDetails } = new AuthDetails(mockLoginStatusResponse);
+
+                expect(expiresAt.getTime()).toBeGreaterThanOrEqual(expectedExpiresAt.getTime());
+                expect(isRefreshRunningBeforeStart).toBe(false);
+                expect(isRefreshRunningAfterStart).toBe(false);
+                expect(authDetailsBeforeLogin).toEqual(expect.objectContaining(expectedOldAuthDetails));
+                expect(authDetailsAfterRefresh).toEqual(expect.objectContaining(expectedNewAuthDetails));
+
+                done();
+            }, swEnabledYoutubeClient.authDetails?.expiresIn as number + 3000);
+        });
+    } else {
+        done();
+    }
+
+}, 6000);
+
 test("startTokenRefresh starts the cycle of refreshing the access token", (done) => {
     youtubeClient._stopRefresh();
     const isRefreshRunningBeforeStart = youtubeClient._isRefreshInitialized();

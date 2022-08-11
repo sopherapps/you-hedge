@@ -14,6 +14,7 @@ export class YoutubeClient {
     private dbId = "YoutubeClient";
     public db: Db;
     isRefreshing: boolean = false;
+    shouldRefreshInServiceWorker: boolean = isServiceWorkerEnabled;
     parent: IParent;
 
     constructor({ db, parent }: { db: Db, parent: IParent }) {
@@ -43,10 +44,10 @@ export class YoutubeClient {
             authDetails.expiresAt = new Date(authDetails.expiresAt);
             this.authDetails = authDetails;
             this.refreshTokenTaskHandle = refreshTokenTaskHandle;
-            this._startTokenRefresh();
+            this.startTokenRefresh();
         } else if (authDetails?.refreshToken) {
             await this.refreshAuthDetails(authDetails);
-            this._startTokenRefresh();
+            this.startTokenRefresh();
         } else if (refreshTokenTaskHandle) {
             this.parent.clearTimeout(refreshTokenTaskHandle);
         }
@@ -65,8 +66,6 @@ export class YoutubeClient {
             if (client) {
                 client.postMessage({ type: "TOKEN_REFRESHED", payload: data });
             }
-        } catch (error) {
-            throw error;
         } finally {
             this.isRefreshing = false;
         }
@@ -109,13 +108,13 @@ export class YoutubeClient {
             interval: loginDetails.interval
         });
         await this.saveToDb();
-        this._startTokenRefresh();
+        this.startTokenRefresh();
     }
 
     /**
      * Starts the Token refresh task
      */
-    startTokenRefresh(force: boolean = true, client: Client | null = null) {
+    scheduleNextTokenRefreshTask(force: boolean = true, client: Client | null = null) {
         const authDetails = this.authDetails;
 
         if (this.refreshTokenTaskHandle && force) {
@@ -125,7 +124,7 @@ export class YoutubeClient {
         if (authDetails) {
             this.refreshTokenTaskHandle = this.parent?.setTimeout(async () => {
                 await this.refreshAuthDetails(authDetails, client);
-                this.startTokenRefresh(false, client);
+                this.scheduleNextTokenRefreshTask(false, client);
             }, (authDetails.expiresIn - 300) * 1000);
         }
     }
@@ -133,8 +132,8 @@ export class YoutubeClient {
     /**
     * Starts the Token refresh task
     */
-    private _startTokenRefresh() {
-        if (isServiceWorkerEnabled) {
+    startTokenRefresh() {
+        if (this.shouldRefreshInServiceWorker) {
             const authDetails = this.authDetails;
 
             if (authDetails) {
@@ -153,7 +152,7 @@ export class YoutubeClient {
             }
 
         } else {
-            return this.startTokenRefresh();
+            return this.scheduleNextTokenRefreshTask();
         }
     }
 
