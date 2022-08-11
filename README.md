@@ -146,8 +146,8 @@ yarn test
 - [x] On back, scroll back to the video that one had selected.
 - [ ] Add tests
   - [x] login client tests
-  - [ ] youtube client tests
-  - [ ] db tests
+  - [x] youtube client tests
+  - [x] db tests
   - [ ] store tests
   - [ ] pages tests
     - [ ] welcome page
