@@ -25,6 +25,7 @@ yarn-error.log*
 .idea/
 .env
 .firebase/
+.vscode/
 
 # webos
 *.ipk
