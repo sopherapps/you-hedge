@@ -86,9 +86,7 @@ export class YoutubeClient {
      * Handles any clean up when the client is no longer needed
      */
     async destroy() {
-        if (this.refreshTokenTaskHandle) {
-            this.parent.clearTimeout(this.refreshTokenTaskHandle);
-        }
+        this._stopRefresh();
         await this.saveToDb();
     }
 
@@ -120,12 +118,11 @@ export class YoutubeClient {
         const authDetails = this.authDetails;
 
         if (this.refreshTokenTaskHandle && force) {
-            this.parent.clearTimeout(this.refreshTokenTaskHandle);
+            this._stopRefresh();
         }
 
         if (authDetails) {
             this.refreshTokenTaskHandle = this.parent?.setTimeout(async () => {
-                console.log("refreshing token");
                 await this.refreshAuthDetails(authDetails, client);
                 this.startTokenRefresh(false, client);
             }, (authDetails.expiresIn - 300) * 1000);
@@ -253,6 +250,40 @@ export class YoutubeClient {
         });
         const data = await response.json();
         return data as PlaylistItemListResponse
+    }
+
+    /**
+     * Clears the state of the client
+     * This is useful when testing thus the presence of the "_" prefix
+     */
+    async _clearState() {
+        this._stopRefresh();
+        delete this.authDetails;
+        await this.db.clear();
+    }
+
+    /***
+     * Gets the data that is saved in the database for this client
+     */
+    async _getDataInDb() {
+        return this.db.get(this.dbId);
+    }
+
+    /**
+     * Stops the refreshing of the token.
+     * It is used only in tests thus the "_" before it
+     */
+    _stopRefresh() {
+        this.refreshTokenTaskHandle && this.parent.clearTimeout(this.refreshTokenTaskHandle);
+        this.refreshTokenTaskHandle = undefined;
+    }
+
+    /**
+     * Checks whether the refresh cycle has started or not.
+     * This is used only in tests theus the "_" on the name
+     */
+    _isRefreshInitialized(): boolean {
+        return !!this.refreshTokenTaskHandle;
     }
 }
 

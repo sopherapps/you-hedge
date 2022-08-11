@@ -10,5 +10,5 @@ export const localStorageDb = new LocalStorageDb(localforage.createInstance({
 export const sessionStorageDb = new SessionStorageDb(localforage.createInstance({
     name: "youhedge-session-storage",
     storeName: "sessionStorage",
-}))
+}));
 
