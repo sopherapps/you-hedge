@@ -147,13 +147,14 @@ yarn test
 - [ ] Add tests
   - [x] login client tests
   - [x] youtube client tests
+  - [x] service worker tests
   - [x] db tests
   - [x] store tests
   - [ ] pages tests
     - [ ] welcome page
     - [x] not found page
     - [ ] home page
-    - [ ] player page
+    - [x] player page
   - [ ] App tests
 - [x] Make this a pwa (progressive web app)
 
