@@ -7,7 +7,10 @@ import { BrowserRouter } from "react-router-dom";
  * @param param1 - the route to display
  * @returns - the render result
  */
-export const render = (ui: any, { route = "/" } = {}) => {
-    window.history.pushState({}, "Test page", route);
+export const render = (ui: any, { routesReplay = ["/"] } = {}) => {
+    for (const route of routesReplay) {
+        window.history.pushState({}, "Test page", route);
+    }
+
     return tlRender(ui, { wrapper: BrowserRouter });
 }

@@ -17,7 +17,7 @@ test('renders link to Home', async () => {
             <Route path="/" element={<div>I am home</div>} />
             <Route path="*" element={<NotFoundPage />} />
         </Routes>,
-        { route: "/lost-again" });
+        { routesReplay: ["/lost-again"] });
 
     const linkToHome = screen.getByText(/go back home/i);
     expect(linkToHome).toBeInTheDocument();

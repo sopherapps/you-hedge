@@ -41,8 +41,12 @@ export default function PlayerPage() {
         if (navigation) {
             navigation.listen(({ action, location }) => {
                 if (action === "POP") {
-                    const search = location.search.split("&videoId")[0];
-                    navigate(`${location.pathname}${search}&videoId=${videoId}`);
+                    let search = `?videoId=${videoId}`;
+                    if (location.search) {
+                        search = `${location.search.split("&videoId")[0]}&videoId=${videoId}`;
+                    }
+
+                    navigate(`${location.pathname}${search}`);
                 }
             });
         }
@@ -54,11 +58,12 @@ export default function PlayerPage() {
 
 
     return <div className="player h-100vh w-100vw">
-        <div className="floating-btn text-center" onClick={goBack}>
+        <div role="button" className="floating-btn text-center" onClick={goBack}>
             <div className="text-center icon i-back">&larr;</div>
             <div className="text-center">Back</div>
         </div>
         <iframe
+            data-testid="youtube-iframe"
             ref={iframeRef}
             title={searchParams.get("title") || "A Youtube Video"}
             src={`https://www.youtube.com/embed/${videoId}?autoplay=1`}
