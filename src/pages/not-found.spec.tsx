@@ -1,7 +1,7 @@
 import React from 'react';
 import { screen } from '@testing-library/react';
 import userEvent from "@testing-library/user-event"
-import NotFoundPage from './NotFound.page';
+import NotFoundPage from './not-found.page';
 import { render } from '../mocks/router';
 import { Routes, Route } from 'react-router-dom';
 

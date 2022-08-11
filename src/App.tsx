@@ -7,7 +7,7 @@ import { AuthDetails, Channel, LoginDetails } from './lib/types/dtos';
 import PlayerPage from './pages/player.page';
 import { LoginFinalized, LoginInitialized, LoginPending, LoginStatus } from './lib/types/state';
 import { InstanceSwitch, SwitchCase } from './components/InstanceSwitch';
-import NotFoundPage from './pages/NotFound.page';
+import NotFoundPage from './pages/not-found.page';
 import ProgressBar from './components/ProgressBar';
 import { YoutubeClient } from './lib/client/youtube';
 import { localStorageDb, sessionStorageDb } from './globals';
