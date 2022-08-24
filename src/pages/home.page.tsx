@@ -77,7 +77,7 @@ export default function HomePage({ refreshChannelBatch, refreshPlaylistItemBatch
 
     return (<div className="flex w-100 h-100vh">
         {/*Sidebar */}
-        <div className="sidebar w-20 w-10-tablet h-100">
+        <div data-testid="sidebar" className="sidebar w-20 w-10-tablet h-100">
             <div className="logo-header slide-from-left h-10 w-100 tablet-text-center">
                 <img className="logo desktop tv" src={logo} alt="YouHedge logo" />
                 <img className="logo tablet-inline" src={smallLogo} alt="YouHedge logo" />
@@ -102,7 +102,7 @@ export default function HomePage({ refreshChannelBatch, refreshPlaylistItemBatch
             </YScrollView>
         </div>
         {/* main content area */}
-        <div className="content-area w-80 h-100 w-90-tablet">
+        <div data-testid="content-area" className="content-area w-80 h-100 w-90-tablet">
             <YScrollView
                 scrollTop={playlistScrollTop}
                 onScroll={getMorePlaylistItems}
