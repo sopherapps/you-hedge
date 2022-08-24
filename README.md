@@ -1,5 +1,10 @@
 # YouHedge
 
+> ' Come unto Me, all ye that labour and are heavy laden, and I will give you rest. Take My yoke upon you, and learn of Me; for I am meek and lowly in heart: and ye shall find rest unto your souls. For My yoke is easy, and My burden is light.'
+>
+> -- [Matthew 11:28-30](https://www2.bible.com/bible/1/MAT.11.28-30)
+
+
 A Web application to sidestep the mentally-degrading YouTube news feed and only view channels subscribed to.
 
 **The webOS version of the app is found in the [./webos](./webos/) folder.**
