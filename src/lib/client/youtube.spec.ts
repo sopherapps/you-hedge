@@ -1,3 +1,4 @@
+import { getMockPageTokenChannelStructs, getMockPlaylistItemsStructs } from "../../mocks/dtos";
 import { MockLocalForage } from "../../mocks/localforage";
 import { mockRefreshTokenRequest } from "../../mocks/requests";
 import { mockLoginDetailsResponse, mockLoginStatusResponse, mockManyChannelsResponse, mockPlaylistItemListResponses, mockRefreshTokenResponse, mockSubscriptionsResponses } from "../../mocks/responses";
@@ -158,17 +159,11 @@ test("startTokenRefresh starts the cycle of refreshing the access token", (done)
 
 test("getChannels returns a list of channels", async () => {
     const expectedPageTokenToChannelsMap: { [key: string]: any[] } = {};
-
-    for (const key in mockSubscriptionsResponses) {
-        if (Object.prototype.hasOwnProperty.call(mockSubscriptionsResponses, key)) {
-            const element = mockSubscriptionsResponses[key];
-            expectedPageTokenToChannelsMap[key] = element.items
-                .map((item, index) => {
-                    const { timestamp, ...data } = new Channel(
-                        element, mockManyChannelsResponse[item.snippet.resourceId.channelId], index);
-                    return expect.objectContaining(data);
-                });
-        }
+    const mockPageTokenChannelStructs = getMockPageTokenChannelStructs();
+    for (const { pageToken, channel } of mockPageTokenChannelStructs) {
+        const { timestamp, ...data } = channel;
+        expectedPageTokenToChannelsMap[pageToken] = expectedPageTokenToChannelsMap[pageToken] || [];
+        expectedPageTokenToChannelsMap[pageToken].push(expect.objectContaining(data));
     }
 
     youtubeClient.authDetails = new AuthDetails(mockLoginStatusResponse);
@@ -183,37 +178,23 @@ test("getChannels returns a list of channels", async () => {
 }, 3000);
 
 test("getPlaylistItems gets a list of playlist items for playlist id", async () => {
-    let channels: Channel[] = [];
     youtubeClient.authDetails = new AuthDetails(mockLoginStatusResponse);
+    const mockPlaylistItemStructs = getMockPlaylistItemsStructs();
 
-    for (const key in mockSubscriptionsResponses) {
-        if (Object.prototype.hasOwnProperty.call(mockSubscriptionsResponses, key)) {
-            const element = mockSubscriptionsResponses[key];
-            const data = element.items
-                .map((item, index) => new Channel(
-                    element, mockManyChannelsResponse[item.snippet.resourceId.channelId], index));
-            channels = channels.concat(data);
+    for (const { channel, playlist } of mockPlaylistItemStructs) {
+        const { pageToken } = playlist;
+        const expectedItems = playlist.items.map(({ timestamp, ...data }) => expect.objectContaining(data));
+
+        const items = await youtubeClient.getPlaylistItems(channel, pageToken);
+        if (pageToken === "prevTok") {
+            const defaultItems = await youtubeClient.getPlaylistItems(channel);
+            expect(defaultItems).toEqual(expect.arrayContaining(expectedItems));
         }
+
+        expect(items).toEqual(expect.arrayContaining(expectedItems));
     }
 
-    for (const chan of channels) {
-        const rawPlaylistItemsResponses = mockPlaylistItemListResponses[chan.playlistId];
-        for (const key in rawPlaylistItemsResponses) {
-            if (Object.prototype.hasOwnProperty.call(rawPlaylistItemsResponses, key)) {
-                const element = rawPlaylistItemsResponses[key];
-                const expectedItems = element.items.map(value => {
-                    const { timestamp, ...data } = new PlaylistItem(element, value, chan.id);
-                    return expect.objectContaining(data);
-                });
 
-                const items = await youtubeClient.getPlaylistItems(chan, key);
-                if (key === "prevTok") {
-                    const defaultItems = await youtubeClient.getPlaylistItems(chan);
-                    expect(defaultItems).toEqual(expect.arrayContaining(expectedItems));
-                }
-
-                expect(items).toEqual(expect.arrayContaining(expectedItems));
-            }
-        }
-    }
 }, 3000);
+
+
