@@ -15,9 +15,10 @@ interface IProps {
     width: string;
     onScroll: (e: YScrollData) => void;
     scrollTop?: number;
+    dataTestid: string;
 }
 
-export default function YScrollView({ children, className, onScroll, height, width, scrollTop = 0 }: IProps) {
+export default function YScrollView({ children, className, onScroll, height, width, scrollTop = 0, dataTestid }: IProps) {
     const el = useRef<HTMLDivElement>(null);
 
     const isAtBottom = useCallback(() => {
@@ -59,7 +60,7 @@ export default function YScrollView({ children, className, onScroll, height, wid
     }, [scrollTop]);
 
     return (
-        <div onWheel={debouncedOnScroll} {...onSwipeHandlers} style={{ height, width }}>
+        <div data-testid={dataTestid} onWheel={debouncedOnScroll} {...onSwipeHandlers} style={{ height, width }}>
             <div ref={el} className={className} style={{ overflowY: "scroll", overflowX: "hidden", height: "100%", width: "100%" }}>
                 {children}
             </div>

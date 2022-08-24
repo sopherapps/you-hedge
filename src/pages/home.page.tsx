@@ -83,6 +83,7 @@ export default function HomePage({ refreshChannelBatch, refreshPlaylistItemBatch
                 <img className="logo tablet-inline" src={smallLogo} alt="YouHedge logo" />
             </div>
             <YScrollView
+                dataTestid="sidebar-scrollview"
                 className="scrollview"
                 onScroll={getMoreChannels}
                 height="90%"
@@ -104,6 +105,7 @@ export default function HomePage({ refreshChannelBatch, refreshPlaylistItemBatch
         {/* main content area */}
         <div data-testid="content-area" className="content-area w-80 h-100 w-90-tablet">
             <YScrollView
+                dataTestid="content-area-scrollview"
                 scrollTop={playlistScrollTop}
                 onScroll={getMorePlaylistItems}
                 height="100%"

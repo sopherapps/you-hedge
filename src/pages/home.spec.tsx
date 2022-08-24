@@ -1,5 +1,5 @@
-import { screen, within } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { fireEvent, screen, within } from "@testing-library/react";
+import { useState } from "react";
 import { Route, Routes } from "react-router-dom";
 import { ChannelsContext, LoginStatusContext, PlaylistItemsContext } from "../lib/contexts";
 import { getMockPageTokenChannelStructs, getMockPlaylistItemsStructs } from "../mocks/dtos";
@@ -67,19 +67,113 @@ test("renders playlist items for selected channel in content area", () => {
     }
 });
 
-test("scrolling down in sidebar loads more channels", () => { });
+test("wheeling down in sidebar loads more channels", async () => {
+    const mockPageTokenChannelStructs = getMockPageTokenChannelStructs();
+    const playlistItems = {};
+    const firstBatchChannelList = mockPageTokenChannelStructs.map(v => v.channel).filter(chan => !chan.pageToken);
+    const lastBatchChannelList = mockPageTokenChannelStructs.map(v => v.channel).filter(chan => !!chan.pageToken);
+    const firstBatchChannels = Object.fromEntries(firstBatchChannelList.map(channel => ([channel.id, channel])));
+    const lastBatchChannels = Object.fromEntries(lastBatchChannelList.map(channel => ([channel.id, channel])));
 
-test("swiping down in sidebar loads more channels", () => { });
+    function TestApp() {
+        const [channels, setChannels] = useState(firstBatchChannels);
+        const mockRefreshChannelFn = () => {
+            setChannels(chans => ({ ...chans, ...lastBatchChannels }));
+        };
 
-test("scrolling down in sidebar when there no more channels does nothing", () => { });
+        return (<ChannelsContext.Provider value={channels}>
+            <PlaylistItemsContext.Provider value={playlistItems}>
+                <Routes>
+                    <Route path="/" element={<HomePage refreshChannelBatch={mockRefreshChannelFn} refreshPlaylistItemBatch={() => { }} />} />
+                </Routes>
+            </PlaylistItemsContext.Provider>
+        </ChannelsContext.Provider>);
+    }
+
+
+    render(<TestApp />, { routesReplay: [`/`] });
+
+    const scrollviewSidebarElement = screen.getByTestId("sidebar-scrollview");
+    for (const channel of firstBatchChannelList) {
+        const channelElement = within(scrollviewSidebarElement).queryByText(channel.title);
+        expect(channelElement).toBeInTheDocument();
+    }
+    for (const channel of lastBatchChannelList) {
+        const channelElement = within(scrollviewSidebarElement).queryByText(channel.title);
+        expect(channelElement).not.toBeInTheDocument();
+    }
+
+    fireEvent.wheel(scrollviewSidebarElement, { deltaY: 100 });
+
+    for (const channel of firstBatchChannelList) {
+        const channelElement = await within(scrollviewSidebarElement).findByText(channel.title);
+        expect(channelElement).toBeInTheDocument();
+    }
+    for (const channel of lastBatchChannelList) {
+        const channelElement = await within(scrollviewSidebarElement).findByText(channel.title);
+        expect(channelElement).toBeInTheDocument();
+    }
+});
+
+test("swiping down in sidebar loads more channels", async () => {
+    const mockPageTokenChannelStructs = getMockPageTokenChannelStructs();
+    const playlistItems = {};
+    const firstBatchChannelList = mockPageTokenChannelStructs.map(v => v.channel).filter(chan => !chan.pageToken);
+    const lastBatchChannelList = mockPageTokenChannelStructs.map(v => v.channel).filter(chan => !!chan.pageToken);
+    const firstBatchChannels = Object.fromEntries(firstBatchChannelList.map(channel => ([channel.id, channel])));
+    const lastBatchChannels = Object.fromEntries(lastBatchChannelList.map(channel => ([channel.id, channel])));
+
+    function TestApp() {
+        const [channels, setChannels] = useState(firstBatchChannels);
+        const mockRefreshChannelFn = () => {
+            setChannels(chans => ({ ...chans, ...lastBatchChannels }));
+        };
+
+        return (<ChannelsContext.Provider value={channels}>
+            <PlaylistItemsContext.Provider value={playlistItems}>
+                <Routes>
+                    <Route path="/" element={<HomePage refreshChannelBatch={mockRefreshChannelFn} refreshPlaylistItemBatch={() => { }} />} />
+                </Routes>
+            </PlaylistItemsContext.Provider>
+        </ChannelsContext.Provider>);
+    }
+
+
+    render(<TestApp />, { routesReplay: [`/`] });
+
+    const scrollviewSidebarElement = screen.getByTestId("sidebar-scrollview");
+    for (const channel of firstBatchChannelList) {
+        const channelElement = within(scrollviewSidebarElement).queryByText(channel.title);
+        expect(channelElement).toBeInTheDocument();
+    }
+    for (const channel of lastBatchChannelList) {
+        const channelElement = within(scrollviewSidebarElement).queryByText(channel.title);
+        expect(channelElement).not.toBeInTheDocument();
+    }
+
+    fireEvent.touchStart(scrollviewSidebarElement, { touches: [{ clientX: 0, clientY: 0 }] });
+    fireEvent.touchMove(scrollviewSidebarElement, { touches: [{ clientX: 0, clientY: 100 }] });
+    fireEvent.touchEnd(scrollviewSidebarElement, { touches: [{}] });
+
+    for (const channel of firstBatchChannelList) {
+        const channelElement = await within(scrollviewSidebarElement).findByText(channel.title);
+        expect(channelElement).toBeInTheDocument();
+    }
+    for (const channel of lastBatchChannelList) {
+        const channelElement = await within(scrollviewSidebarElement).findByText(channel.title);
+        expect(channelElement).toBeInTheDocument();
+    }
+});
+
+test("wheeling down in sidebar when there no more channels does nothing", () => { });
 
 test("swiping down in sidebar when there no more channels does nothing", () => { });
 
-test("scrolling down in the content area loads more playlist items", () => { });
+test("wheeling down in the content area loads more playlist items", () => { });
 
 test("swiping down in the content area loads more playlist items", () => { });
 
-test("scrolling down in sidebar when there are no more playlist items does nothing", () => { });
+test("wheeling down in sidebar when there are no more playlist items does nothing", () => { });
 
 test("swiping down in sidebar when there are no more playlist items does nothing", () => { });
 
