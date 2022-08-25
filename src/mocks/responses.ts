@@ -72,7 +72,6 @@ export const mockSubscriptionsResponses: { [key: string]: SubscriptionResponse }
         ]
     },
     yutth: {
-        "nextPageToken": "nextPageToken2",
         "prevPageToken": "prev",
         "pageInfo": {
             "totalResults": 39,

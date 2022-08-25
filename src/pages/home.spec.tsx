@@ -74,10 +74,12 @@ test("wheeling down in sidebar loads more channels", async () => {
     const lastBatchChannelList = mockPageTokenChannelStructs.map(v => v.channel).filter(chan => !!chan.pageToken);
     const firstBatchChannels = Object.fromEntries(firstBatchChannelList.map(channel => ([channel.id, channel])));
     const lastBatchChannels = Object.fromEntries(lastBatchChannelList.map(channel => ([channel.id, channel])));
+    const mockCallback = jest.fn(() => { });
 
     function TestApp() {
         const [channels, setChannels] = useState(firstBatchChannels);
         const mockRefreshChannelFn = () => {
+            mockCallback();
             setChannels(chans => ({ ...chans, ...lastBatchChannels }));
         };
 
@@ -93,26 +95,27 @@ test("wheeling down in sidebar loads more channels", async () => {
 
     render(<TestApp />, { routesReplay: [`/`] });
 
-    const scrollviewSidebarElement = screen.getByTestId("sidebar-scrollview");
+    const sidebarScrollviewElement = screen.getByTestId("sidebar-scrollview");
     for (const channel of firstBatchChannelList) {
-        const channelElement = within(scrollviewSidebarElement).queryByText(channel.title);
+        const channelElement = within(sidebarScrollviewElement).queryByText(channel.title);
         expect(channelElement).toBeInTheDocument();
     }
     for (const channel of lastBatchChannelList) {
-        const channelElement = within(scrollviewSidebarElement).queryByText(channel.title);
+        const channelElement = within(sidebarScrollviewElement).queryByText(channel.title);
         expect(channelElement).not.toBeInTheDocument();
     }
 
-    fireEvent.wheel(scrollviewSidebarElement, { deltaY: 100 });
+    fireEvent.wheel(sidebarScrollviewElement, { deltaY: 100 });
 
     for (const channel of firstBatchChannelList) {
-        const channelElement = await within(scrollviewSidebarElement).findByText(channel.title);
+        const channelElement = await within(sidebarScrollviewElement).findByText(channel.title);
         expect(channelElement).toBeInTheDocument();
     }
     for (const channel of lastBatchChannelList) {
-        const channelElement = await within(scrollviewSidebarElement).findByText(channel.title);
+        const channelElement = await within(sidebarScrollviewElement).findByText(channel.title);
         expect(channelElement).toBeInTheDocument();
     }
+    expect(mockCallback).toBeCalledTimes(1);
 });
 
 test("swiping down in sidebar loads more channels", async () => {
@@ -122,10 +125,12 @@ test("swiping down in sidebar loads more channels", async () => {
     const lastBatchChannelList = mockPageTokenChannelStructs.map(v => v.channel).filter(chan => !!chan.pageToken);
     const firstBatchChannels = Object.fromEntries(firstBatchChannelList.map(channel => ([channel.id, channel])));
     const lastBatchChannels = Object.fromEntries(lastBatchChannelList.map(channel => ([channel.id, channel])));
+    const mockCallback = jest.fn(() => { });
 
     function TestApp() {
         const [channels, setChannels] = useState(firstBatchChannels);
         const mockRefreshChannelFn = () => {
+            mockCallback();
             setChannels(chans => ({ ...chans, ...lastBatchChannels }));
         };
 
@@ -141,40 +146,324 @@ test("swiping down in sidebar loads more channels", async () => {
 
     render(<TestApp />, { routesReplay: [`/`] });
 
-    const scrollviewSidebarElement = screen.getByTestId("sidebar-scrollview");
+    const sidebarScrollviewElement = screen.getByTestId("sidebar-scrollview");
     for (const channel of firstBatchChannelList) {
-        const channelElement = within(scrollviewSidebarElement).queryByText(channel.title);
+        const channelElement = within(sidebarScrollviewElement).queryByText(channel.title);
         expect(channelElement).toBeInTheDocument();
     }
     for (const channel of lastBatchChannelList) {
-        const channelElement = within(scrollviewSidebarElement).queryByText(channel.title);
+        const channelElement = within(sidebarScrollviewElement).queryByText(channel.title);
         expect(channelElement).not.toBeInTheDocument();
     }
 
-    fireEvent.touchStart(scrollviewSidebarElement, { touches: [{ clientX: 0, clientY: 0 }] });
-    fireEvent.touchMove(scrollviewSidebarElement, { touches: [{ clientX: 0, clientY: 100 }] });
-    fireEvent.touchEnd(scrollviewSidebarElement, { touches: [{}] });
+    fireEvent.touchStart(sidebarScrollviewElement, { touches: [{ clientX: 0, clientY: 0 }] });
+    fireEvent.touchMove(sidebarScrollviewElement, { touches: [{ clientX: 0, clientY: 100 }] });
+    fireEvent.touchEnd(sidebarScrollviewElement, { touches: [{}] });
 
     for (const channel of firstBatchChannelList) {
-        const channelElement = await within(scrollviewSidebarElement).findByText(channel.title);
+        const channelElement = await within(sidebarScrollviewElement).findByText(channel.title);
         expect(channelElement).toBeInTheDocument();
     }
     for (const channel of lastBatchChannelList) {
-        const channelElement = await within(scrollviewSidebarElement).findByText(channel.title);
+        const channelElement = await within(sidebarScrollviewElement).findByText(channel.title);
         expect(channelElement).toBeInTheDocument();
     }
+    expect(mockCallback).toBeCalledTimes(1);
 });
 
-test("wheeling down in sidebar when there no more channels does nothing", () => { });
+test("wheeling down in sidebar when there no more channels does nothing", async () => {
+    const mockPageTokenChannelStructs = getMockPageTokenChannelStructs();
+    const playlistItems = {};
+    const channelList = mockPageTokenChannelStructs.map(v => v.channel);
+    const allChannels = Object.fromEntries(channelList.map(channel => ([channel.id, channel])));
+    const mockCallback = jest.fn(() => { });
 
-test("swiping down in sidebar when there no more channels does nothing", () => { });
+    function TestApp() {
+        const [channels, setChannels] = useState(allChannels);
+        const mockRefreshChannelFn = () => {
+            mockCallback();
+            setChannels(chans => ({ ...chans, ...allChannels }));
+        };
 
-test("wheeling down in the content area loads more playlist items", () => { });
+        return (<ChannelsContext.Provider value={channels}>
+            <PlaylistItemsContext.Provider value={playlistItems}>
+                <Routes>
+                    <Route path="/" element={<HomePage refreshChannelBatch={mockRefreshChannelFn} refreshPlaylistItemBatch={() => { }} />} />
+                </Routes>
+            </PlaylistItemsContext.Provider>
+        </ChannelsContext.Provider>);
+    }
 
-test("swiping down in the content area loads more playlist items", () => { });
 
-test("wheeling down in sidebar when there are no more playlist items does nothing", () => { });
+    render(<TestApp />, { routesReplay: [`/`] });
 
-test("swiping down in sidebar when there are no more playlist items does nothing", () => { });
+    const sidebarScrollviewElement = screen.getByTestId("sidebar-scrollview");
+    fireEvent.wheel(sidebarScrollviewElement, { deltaY: 100 });
+
+    for (const channel of channelList) {
+        const channelElement = await within(sidebarScrollviewElement).findByText(channel.title);
+        expect(channelElement).toBeInTheDocument();
+    }
+
+    expect(mockCallback).not.toBeCalled();
+});
+
+test("swiping down in sidebar when there no more channels does nothing", async () => {
+    const mockPageTokenChannelStructs = getMockPageTokenChannelStructs();
+    const playlistItems = {};
+    const channelList = mockPageTokenChannelStructs.map(v => v.channel);
+    const allChannels = Object.fromEntries(channelList.map(channel => ([channel.id, channel])));
+    const mockCallback = jest.fn(() => { });
+
+    function TestApp() {
+        const [channels, setChannels] = useState(allChannels);
+        const mockRefreshChannelFn = () => {
+            mockCallback();
+            setChannels(chans => ({ ...chans, ...allChannels }));
+        };
+
+        return (<ChannelsContext.Provider value={channels}>
+            <PlaylistItemsContext.Provider value={playlistItems}>
+                <Routes>
+                    <Route path="/" element={<HomePage refreshChannelBatch={mockRefreshChannelFn} refreshPlaylistItemBatch={() => { }} />} />
+                </Routes>
+            </PlaylistItemsContext.Provider>
+        </ChannelsContext.Provider>);
+    }
+
+
+    render(<TestApp />, { routesReplay: [`/`] });
+
+    const sidebarScrollviewElement = screen.getByTestId("sidebar-scrollview");
+    fireEvent.touchStart(sidebarScrollviewElement, { touches: [{ clientX: 0, clientY: 0 }] });
+    fireEvent.touchMove(sidebarScrollviewElement, { touches: [{ clientX: 0, clientY: 100 }] });
+    fireEvent.touchEnd(sidebarScrollviewElement, { touches: [{}] });
+
+    for (const channel of channelList) {
+        const channelElement = await within(sidebarScrollviewElement).findByText(channel.title);
+        expect(channelElement).toBeInTheDocument();
+    }
+
+    expect(mockCallback).not.toBeCalled();
+});
+
+test("wheeling down in the content area loads more playlist items", async () => {
+    const mockPageTokenChannelStructs = getMockPageTokenChannelStructs();
+    const mockPlaylistItemsStructs = getMockPlaylistItemsStructs();
+    const channels = Object.fromEntries(mockPageTokenChannelStructs.map(({ channel }) => ([channel.id, channel])));
+    const selectedChannelId = "iuiuoaiuh";
+    const allPlaylistItems = mockPlaylistItemsStructs
+        .map(item => item.playlist.items)
+        .reduce((prev, curr) => prev.concat(curr))
+        .filter(item => item.channelId === selectedChannelId);
+
+    const firstBatchPlaylistItemList = allPlaylistItems.filter(item => !item.pageToken);
+    const lastBatchPlaylistItemList = allPlaylistItems.filter(item => !!item.pageToken);
+    const firstBatchPlaylistItems = Object.fromEntries(firstBatchPlaylistItemList.map(item => ([item.id, item])));
+    const lastBatchPlaylistItems = Object.fromEntries(lastBatchPlaylistItemList.map(item => ([item.id, item])));
+    const mockCallback = jest.fn(() => { });
+
+    function TestApp() {
+        const [playlistItems, setPlaylistItems] = useState(firstBatchPlaylistItems);
+        const mockRefreshPlaylistItemsFn = () => {
+            mockCallback();
+            setPlaylistItems(items => ({ ...items, ...lastBatchPlaylistItems }));
+        };
+
+        return (<ChannelsContext.Provider value={channels}>
+            <PlaylistItemsContext.Provider value={playlistItems}>
+                <Routes>
+                    <Route path="/" element={<HomePage refreshChannelBatch={() => { }} refreshPlaylistItemBatch={mockRefreshPlaylistItemsFn} />} />
+                </Routes>
+            </PlaylistItemsContext.Provider>
+        </ChannelsContext.Provider>);
+    }
+
+
+    render(<TestApp />, { routesReplay: [`/?channelId=${selectedChannelId}`] });
+
+    const contentAreaScrollviewElement = screen.getByTestId("content-area-scrollview");
+    for (const item of firstBatchPlaylistItemList) {
+        const title = `${item.title.slice(0, 60).trimEnd()}${item.title.length > 60 ? "..." : ""}`;
+        const playlistItemElement = within(contentAreaScrollviewElement).queryByText(title);
+        expect(playlistItemElement).toBeInTheDocument();
+    }
+    for (const item of lastBatchPlaylistItemList) {
+        const title = `${item.title.slice(0, 60).trimEnd()}${item.title.length > 60 ? "..." : ""}`;
+        const playlistItemElement = within(contentAreaScrollviewElement).queryByText(title);
+        expect(playlistItemElement).not.toBeInTheDocument();
+    }
+
+    fireEvent.wheel(contentAreaScrollviewElement, { deltaY: 100 });
+
+    for (const item of firstBatchPlaylistItemList) {
+        const title = `${item.title.slice(0, 60).trimEnd()}${item.title.length > 60 ? "..." : ""}`;
+        const playlistItemElement = await within(contentAreaScrollviewElement).findByText(title);
+        expect(playlistItemElement).toBeInTheDocument();
+    }
+    for (const item of lastBatchPlaylistItemList) {
+        const title = `${item.title.slice(0, 60).trimEnd()}${item.title.length > 60 ? "..." : ""}`;
+        const playlistItemElement = await within(contentAreaScrollviewElement).findByText(title);
+        expect(playlistItemElement).toBeInTheDocument();
+    }
+
+    expect(mockCallback).toBeCalledTimes(1);
+});
+
+test("swiping down in the content area loads more playlist items", async () => {
+    const mockPageTokenChannelStructs = getMockPageTokenChannelStructs();
+    const mockPlaylistItemsStructs = getMockPlaylistItemsStructs();
+    const channels = Object.fromEntries(mockPageTokenChannelStructs.map(({ channel }) => ([channel.id, channel])));
+    const selectedChannelId = "iuiuoaiuh";
+    const allPlaylistItems = mockPlaylistItemsStructs
+        .map(item => item.playlist.items)
+        .reduce((prev, curr) => prev.concat(curr))
+        .filter(item => item.channelId === selectedChannelId);
+
+    const firstBatchPlaylistItemList = allPlaylistItems.filter(item => !item.pageToken);
+    const lastBatchPlaylistItemList = allPlaylistItems.filter(item => !!item.pageToken);
+    const firstBatchPlaylistItems = Object.fromEntries(firstBatchPlaylistItemList.map(item => ([item.id, item])));
+    const lastBatchPlaylistItems = Object.fromEntries(lastBatchPlaylistItemList.map(item => ([item.id, item])));
+    const mockCallback = jest.fn(() => { });
+
+    function TestApp() {
+        const [playlistItems, setPlaylistItems] = useState(firstBatchPlaylistItems);
+        const mockRefreshPlaylistItemsFn = () => {
+            mockCallback();
+            setPlaylistItems(items => ({ ...items, ...lastBatchPlaylistItems }));
+        };
+
+        return (<ChannelsContext.Provider value={channels}>
+            <PlaylistItemsContext.Provider value={playlistItems}>
+                <Routes>
+                    <Route path="/" element={<HomePage refreshChannelBatch={() => { }} refreshPlaylistItemBatch={mockRefreshPlaylistItemsFn} />} />
+                </Routes>
+            </PlaylistItemsContext.Provider>
+        </ChannelsContext.Provider>);
+    }
+
+
+    render(<TestApp />, { routesReplay: [`/?channelId=${selectedChannelId}`] });
+
+    const contentAreaScrollviewElement = screen.getByTestId("content-area-scrollview");
+    for (const item of firstBatchPlaylistItemList) {
+        const title = `${item.title.slice(0, 60).trimEnd()}${item.title.length > 60 ? "..." : ""}`;
+        const playlistItemElement = within(contentAreaScrollviewElement).queryByText(title);
+        expect(playlistItemElement).toBeInTheDocument();
+    }
+    for (const item of lastBatchPlaylistItemList) {
+        const title = `${item.title.slice(0, 60).trimEnd()}${item.title.length > 60 ? "..." : ""}`;
+        const playlistItemElement = within(contentAreaScrollviewElement).queryByText(title);
+        expect(playlistItemElement).not.toBeInTheDocument();
+    }
+
+    fireEvent.wheel(contentAreaScrollviewElement, { deltaY: 100 });
+    fireEvent.touchStart(contentAreaScrollviewElement, { touches: [{ clientX: 0, clientY: 0 }] });
+    fireEvent.touchMove(contentAreaScrollviewElement, { touches: [{ clientX: 0, clientY: 100 }] });
+    fireEvent.touchEnd(contentAreaScrollviewElement, { touches: [{}] });
+
+    for (const item of firstBatchPlaylistItemList) {
+        const title = `${item.title.slice(0, 60).trimEnd()}${item.title.length > 60 ? "..." : ""}`;
+        const playlistItemElement = await within(contentAreaScrollviewElement).findByText(title);
+        expect(playlistItemElement).toBeInTheDocument();
+    }
+    for (const item of lastBatchPlaylistItemList) {
+        const title = `${item.title.slice(0, 60).trimEnd()}${item.title.length > 60 ? "..." : ""}`;
+        const playlistItemElement = await within(contentAreaScrollviewElement).findByText(title);
+        expect(playlistItemElement).toBeInTheDocument();
+    }
+
+    expect(mockCallback).toBeCalledTimes(1);
+});
+
+test("wheeling down in content area when there are no more playlist items does nothing", async () => {
+    const mockPageTokenChannelStructs = getMockPageTokenChannelStructs();
+    const mockPlaylistItemsStructs = getMockPlaylistItemsStructs();
+    const channels = Object.fromEntries(mockPageTokenChannelStructs.map(({ channel }) => ([channel.id, channel])));
+    const selectedChannelId = "iuiuoaiuh";
+    const playlistItemsList = mockPlaylistItemsStructs
+        .map(item => item.playlist.items)
+        .reduce((prev, curr) => prev.concat(curr))
+        .filter(item => item.channelId === selectedChannelId);
+
+    const allPlaylistItems = Object.fromEntries(playlistItemsList.map(item => ([item.id, item])));
+    const mockCallback = jest.fn(() => { });
+
+    function TestApp() {
+        const [playlistItems, setPlaylistItems] = useState(allPlaylistItems);
+        const mockRefreshPlaylistItemsFn = () => {
+            mockCallback();
+            setPlaylistItems(items => ({ ...items, ...allPlaylistItems }));
+        };
+
+        return (<ChannelsContext.Provider value={channels}>
+            <PlaylistItemsContext.Provider value={playlistItems}>
+                <Routes>
+                    <Route path="/" element={<HomePage refreshChannelBatch={() => { }} refreshPlaylistItemBatch={mockRefreshPlaylistItemsFn} />} />
+                </Routes>
+            </PlaylistItemsContext.Provider>
+        </ChannelsContext.Provider>);
+    }
+
+
+    render(<TestApp />, { routesReplay: [`/?channelId=${selectedChannelId}`] });
+
+    const contentAreaScrollviewElement = screen.getByTestId("content-area-scrollview");
+    fireEvent.wheel(contentAreaScrollviewElement, { deltaY: 100 });
+
+    for (const item of playlistItemsList) {
+        const title = `${item.title.slice(0, 60).trimEnd()}${item.title.length > 60 ? "..." : ""}`;
+        const playlistItemElement = await within(contentAreaScrollviewElement).findByText(title);
+        expect(playlistItemElement).toBeInTheDocument();
+    }
+
+    expect(mockCallback).not.toBeCalled();
+});
+
+test("swiping down in content area when there are no more playlist items does nothing", async () => {
+    const mockPageTokenChannelStructs = getMockPageTokenChannelStructs();
+    const mockPlaylistItemsStructs = getMockPlaylistItemsStructs();
+    const channels = Object.fromEntries(mockPageTokenChannelStructs.map(({ channel }) => ([channel.id, channel])));
+    const selectedChannelId = "iuiuoaiuh";
+    const playlistItemsList = mockPlaylistItemsStructs
+        .map(item => item.playlist.items)
+        .reduce((prev, curr) => prev.concat(curr))
+        .filter(item => item.channelId === selectedChannelId);
+
+    const allPlaylistItems = Object.fromEntries(playlistItemsList.map(item => ([item.id, item])));
+    const mockCallback = jest.fn(() => { });
+
+    function TestApp() {
+        const [playlistItems, setPlaylistItems] = useState(allPlaylistItems);
+        const mockRefreshPlaylistItemsFn = () => {
+            mockCallback();
+            setPlaylistItems(items => ({ ...items, ...allPlaylistItems }));
+        };
+
+        return (<ChannelsContext.Provider value={channels}>
+            <PlaylistItemsContext.Provider value={playlistItems}>
+                <Routes>
+                    <Route path="/" element={<HomePage refreshChannelBatch={() => { }} refreshPlaylistItemBatch={mockRefreshPlaylistItemsFn} />} />
+                </Routes>
+            </PlaylistItemsContext.Provider>
+        </ChannelsContext.Provider>);
+    }
+
+
+    render(<TestApp />, { routesReplay: [`/?channelId=${selectedChannelId}`] });
+
+    const contentAreaScrollviewElement = screen.getByTestId("content-area-scrollview");
+    fireEvent.touchStart(contentAreaScrollviewElement, { touches: [{ clientX: 0, clientY: 0 }] });
+    fireEvent.touchMove(contentAreaScrollviewElement, { touches: [{ clientX: 0, clientY: 100 }] });
+    fireEvent.touchEnd(contentAreaScrollviewElement, { touches: [{}] });
+
+    for (const item of playlistItemsList) {
+        const title = `${item.title.slice(0, 60).trimEnd()}${item.title.length > 60 ? "..." : ""}`;
+        const playlistItemElement = await within(contentAreaScrollviewElement).findByText(title);
+        expect(playlistItemElement).toBeInTheDocument();
+    }
+
+    expect(mockCallback).not.toBeCalled();
+});
 
 test("clicking the playlist item opens it in the player page", () => { });
