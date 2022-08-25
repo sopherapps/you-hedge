@@ -78,6 +78,12 @@ yarn start
 git clone git@github.com:sopherapps/you-hedge.git
 ```
 
+- Set up the web app as shown in [the instructions above](#quick-start-web)
+
+- Host it on a server of your choice and get its URL.
+
+- Update the `location.href = 'https://youhedge.web.app';` line in the [webos/index.html](./webos/index.html) file, replacing `https://youhedge.web.app` with your URL got above.
+
 - Open the webOS simulator
 - In the simulator, Select 'launch app' from 'tools' and select the `webos` folder in the root of the `you-hedge` folder.
 
