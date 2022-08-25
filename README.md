@@ -22,19 +22,19 @@ Its back end can be found at [https://github.com/sopherapps/you-hedge-back](http
 
 ### 1. Login Page (Welcome page)
 
-![YouHedge Login page](./assets/youhedge%20login.png)
+![YouHedge Login page](./designs/youhedge%20login.png)
 
 ### 2. Home page
 
-![YouHedge Home page](./assets/youhedge%20home.png)
+![YouHedge Home page](./designs/youhedge%20home.png)
 
 ### 3. YouTube Player Page
 
-![YouHedge YouTube Player Page](./assets/youhedge%20youtube%20player.png)
+![YouHedge YouTube Player Page](./designs/youhedge%20youtube%20player.png)
 
 ### 4. YouTube Player Page on Hover at the top (Showing back button)
 
-![YouTube Player Page on Hover at the top (Showing back button)](./assets/youhedge%20youtube%20player%20with%20back%20button.png)
+![YouTube Player Page on Hover at the top (Showing back button)](./designs/youhedge%20youtube%20player%20with%20back%20button.png)
 
 ## Quick Start (web)
 
