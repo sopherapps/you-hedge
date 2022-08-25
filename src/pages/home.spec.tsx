@@ -1,10 +1,12 @@
 import { fireEvent, screen, within } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { useState } from "react";
 import { Route, Routes } from "react-router-dom";
 import { ChannelsContext, LoginStatusContext, PlaylistItemsContext } from "../lib/contexts";
 import { getMockPageTokenChannelStructs, getMockPlaylistItemsStructs } from "../mocks/dtos";
 import { render } from "../mocks/router";
 import HomePage from "./home.page";
+import PlayerPage from "./player.page";
 
 
 test("renders channels in sidebar", () => {
@@ -466,4 +468,43 @@ test("swiping down in content area when there are no more playlist items does no
     expect(mockCallback).not.toBeCalled();
 });
 
-test("clicking the playlist item opens it in the player page", () => { });
+test("clicking the playlist item opens it in the player page", async () => {
+    const mockPageTokenChannelStructs = getMockPageTokenChannelStructs();
+    const mockPlaylistItemsStructs = getMockPlaylistItemsStructs();
+
+    const channels = Object.fromEntries(mockPageTokenChannelStructs.map(({ channel }) => ([channel.id, channel])));
+    const playlistItems = Object.fromEntries(mockPlaylistItemsStructs
+        .map(item => item.playlist.items)
+        .reduce((prev, curr) => prev.concat(curr))
+        .map(item => [item.id, item]));
+    const channelList = Object.values(channels);
+    const selectedChannelId = channelList[1].id;
+    const playlistItemsList = Object.values(playlistItems).filter(item => item.channelId === selectedChannelId);
+
+    render(
+        (
+            <ChannelsContext.Provider value={channels}>
+                <PlaylistItemsContext.Provider value={playlistItems}>
+                    <Routes>
+                        <Route path="/" element={<HomePage refreshChannelBatch={() => { }} refreshPlaylistItemBatch={() => { }} />} />
+                        <Route path="player/:videoId" element={<PlayerPage />} />
+                    </Routes>
+                </PlaylistItemsContext.Provider>
+            </ChannelsContext.Provider>
+        ),
+        { routesReplay: [`/?channelId=${selectedChannelId}`] }
+    );
+
+    for (const playlistItem of playlistItemsList) {
+        const title = `${playlistItem.title.slice(0, 60).trimEnd()}${playlistItem.title.length > 60 ? "..." : ""}`;
+        const playlistItemElement = await screen.findByText(title);
+        userEvent.click(playlistItemElement);
+
+        const playerElement = await screen.findByTestId("youtube-iframe");
+        expect(playerElement).toBeInTheDocument();
+        expect(playerElement.title).toBe(playlistItem.title);
+
+        const backButton = screen.getByText(/back/i);
+        userEvent.click(backButton);
+    }
+});
