@@ -6,8 +6,10 @@
 
 
 A Web application to sidestep the mentally-degrading YouTube news feed and only view channels subscribed to.
+Its back end can be found at [https://github.com/sopherapps/you-hedge-back](https://github.com/sopherapps/you-hedge-back).
 
 **The webOS version of the app is found in the [./webos](./webos/) folder.**
+
 
 ## Dependencies
 
@@ -16,7 +18,27 @@ A Web application to sidestep the mentally-degrading YouTube news feed and only 
 - [react router v6+](https://reactrouter.com/)
 - [webOS v4.0+](https://www.lg.com/global/business/webos) for webOS app
 
+## What it Looks like
+
+### 1. Login Page (Welcome page)
+
+![YouHedge Login page](./assets/youhedge%20login.png)
+
+### 2. Home page
+
+![YouHedge Home page](./assets/youhedge%20home.png)
+
+### 3. YouTube Player Page
+
+![YouHedge YouTube Player Page](./assets/youhedge%20youtube%20player.png)
+
+### 4. YouTube Player Page on Hover at the top (Showing back button)
+
+![YouTube Player Page on Hover at the top (Showing back button)](./assets/youhedge%20youtube%20player%20with%20back%20button.png)
+
 ## Quick Start (web)
+
+- Set up the [backend](https://github.com/sopherapps/you-hedge-back)
 
 - Clone the repo
 
@@ -46,6 +68,8 @@ yarn start
 - Open the browser at [localhost:3000](http://localhost:3000) if it is not yet open already
 
 ## Quick Start (webOS)
+
+- Set up the [backend](https://github.com/sopherapps/you-hedge-back)
 
 - Ensure you have the [webOS CLI](https://webostv.developer.lge.com/sdk/command-line-interface/installation/) and [webOS simulator](https://webostv.developer.lge.com/sdk/Simulator/installation/) installed.
 - Clone the repo
@@ -155,12 +179,11 @@ yarn test
   - [x] service worker tests
   - [x] db tests
   - [x] store tests
-  - [ ] pages tests
-    - [ ] welcome page
+  - [x] pages tests
+    - [x] welcome page
     - [x] not found page
-    - [ ] home page
+    - [x] home page
     - [x] player page
-  - [ ] App tests
 - [x] Make this a pwa (progressive web app)
 
 ## Acknowledgments
