@@ -93,7 +93,7 @@ git clone git@github.com:sopherapps/you-hedge.git
 
 - Youtube data api has daily quotas of upto 10,000 currently
 - LG WebOS apps use JS/HTML/CSS with DB8 for data storage, and localStorage, sessionStorage.
-- LocalStorage does not get cleared when app is uninstalled, but sessionStorage should as it is attached to the session.
+- LocalStorage may not get cleared when app is uninstalled, but sessionStorage should as it is attached to the session.
 
 ### Requirements:
 
@@ -107,7 +107,8 @@ git clone git@github.com:sopherapps/you-hedge.git
 
 - Use react and react-router to create a single page application
 - Move all requests sent to YuoTube to [a separate backend](https://github.com/sopherapps/you-hedge-back) to avoid the exposure of Google API client secrets and API keys.
-- Save all data in session storage for the sake of the webOS app
+- Save all data in [LocalForage](https://github.com/localForage/localForage) for the sake of the progressive web app (PWA) since 
+service workers can't access sessionStorage or localStorage.
 - Use the YouTube iframe to play the youtube videos themselves
 
 ### Project Structure
