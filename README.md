@@ -151,47 +151,6 @@ yarn install
 yarn test
 ```
 
-## TODO
-
-- [x] Playlists for channels other than those got at the start are not being returned.
-- [x] On mobile, the wheel event is not being fired.
-- [x] On mobile, the UI is quite terrible with regards to the layout. Fix it.
-- [x] The grace period between login initialization and retrieval is too small. This was due an nginx-uwsgi timeout. I added the configurations below to the nginx file for the domain 
-
-    ```
-    localtion / {
-        #....
-        uwsgi_read_timeout 300s;
-        proxy_read_timeout 300s;
-        proxy_connect_timeout 300s;
-        proxy_send_timeout 300s;
-        }
-    ```
-- [x] Add loading indicators on welcome page, home page (on clicking a channel)
-- [x] Increase the size of the controls of the YouTube player - may not be possible. I have added a few more details in the iframe
-- [x] Fix the refreshing of the access token. For some reason, it keeps timing out.
-- [x] Fix the icon added to webos. Give it more padding as opposed to the favicon
-- [x] Add animations when loading playlist items and moving from screen to screen.
-- [x] Be able to return to the old screen after visiting the youtube iframe
-- [x] Fix URL on welcome screen after login on mobile. It is a little skewed.
-- [x] Fix the scroll to only occur if the scroll view is at the bottom
-- [x] Fix the repetitive signing in
-- [x] Fix the style of the favicon
-- [x] Fix the underlines on the playlist items' headings
-- [x] On back, scroll back to the video that one had selected.
-- [ ] Add tests
-  - [x] login client tests
-  - [x] youtube client tests
-  - [x] service worker tests
-  - [x] db tests
-  - [x] store tests
-  - [x] pages tests
-    - [x] welcome page
-    - [x] not found page
-    - [x] home page
-    - [x] player page
-- [x] Make this a pwa (progressive web app)
-
 ## Acknowledgments
 
 - We can do nothing without God (John 15: 5). Glory be to Him.
