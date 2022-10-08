@@ -4,6 +4,8 @@
 >
 > -- [Matthew 11:28-30](https://www2.bible.com/bible/1/MAT.11.28-30)
 
+![CI status](https://github.com/sopherapps/you-hedge/actions/workflows/firebase-hosting-merge.yml/badge.svg)
+
 
 A Web application to sidestep the mentally-degrading YouTube news feed and only view channels subscribed to.
 Its back end can be found at [https://github.com/sopherapps/you-hedge-back](https://github.com/sopherapps/you-hedge-back).
@@ -159,3 +161,9 @@ yarn test
 ## License
 
 Copyright (c) 2022 [Martin Ahindura](https://github.com/tinitto). Licensed under the [MIT License](./LICENSE)
+
+## Gratitude
+
+All glory be to God
+
+<a href="https://www.buymeacoffee.com/martinahinJ" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
